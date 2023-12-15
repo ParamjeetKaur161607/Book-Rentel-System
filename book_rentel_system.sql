@@ -1,0 +1,209 @@
+-- use book_rentel_system;
+-- show tables;
+-- desc books;
+-- desc book_category;
+-- ALTER TABLE user_reg
+-- MODIFY COLUMN user_id varchar(255) not null;
+
+-- create database BookRentelSystem;
+
+
+use bookrentelsystem;
+-- show tables;
+-- select*from user_reg;
+-- select*from book;
+-- select*from user_file;
+-- delete from user_reg where user_email='sajal@gmail.com';
+
+-- create table user_reg(
+--     user_id varchar(255) not null,
+--     user_email varchar(255) not null,
+--     user_phone varchar(10) not null,
+--     user_name varchar(255) not null,
+--     user_gender varchar(20) not null,
+--     user_dob date not null,
+--     user_address varchar(255) not null,      
+--     card_number varchar(16) not null,
+--     name_on_card varchar(255) not null,
+--     cvv varchar(3) not null,
+--     expiry_month int not null,
+--     expiry_year int not null,
+--     user_security_question varchar(255) not null,
+--     user_password varchar(255) not null,
+--     user_status varchar(20) not null,
+--     user_created date not null,
+--     user_modified date not null,
+--     PRIMARY KEY(user_email)
+-- );
+
+-- show tables;
+-- create table super_admin(     
+--     s_admin_id int not null,
+--     s_admin_email varchar(255) not null,
+--     s_admin_phone varchar(10) not null,
+--     s_admin_name varchar(255) not null,
+--     s_admin_gender varchar(20) not null,
+--     s_admin_dob date not null,
+--     s_admin_address text not null,   
+--     s_admin_password varchar(255) not null,
+--     s_admin_image varchar(255),
+--     s_admin_created date not null,
+--     s_admin_modified date not null,
+--     PRIMARY KEY(s_admin_email)
+-- );
+
+-- create table admin(     
+--     admin_id int not null,
+--     admin_email varchar(255) not null,
+--     admin_phone varchar(10) not null,
+--     admin_name varchar(255) not null,
+--     admin_gender varchar(20) not null,
+--     admin_dob date not null,
+--     admin_address text not null,   
+--     admin_password varchar(255) not null,
+--     admin_image varchar(255),
+--     admin_created date not null,
+--     admin_modified date not null,
+--     PRIMARY KEY(admin_email)
+-- );
+-- drop table super_admin;
+-- desc super_admin;
+-- insert into super_admin(s_admin_email,s_admin_phone,s_admin_name,s_admin_gender,
+-- s_admin_dob,s_admin_address,s_admin_password) values('paramjeetkaur161607@gmail.com','7973276717','Paramjeet Kaur','Female','2002-10-07','#Param,Chandigarh','Paramjeet@161607');
+-- select*from super_admin;
+-- delete from super_admin where s_admin_email="paramjeetkaur@gmail.com";
+-- ALTER TABLE super_admin MODIFY COLUMN s_admin_password varchar(255) not null;
+-- select*from admin where admin_email='neeraj@gmail.com' or admin_id='65704f70895ca';
+-- insert into super_admin values(1,'paramjeetkaur@gmail.com','7973276717','Paramjeet Kaur','female','2002-10-07','#param,chandigarh','Param@161607','super_admin.jpg',now(),now());
+-- select*from super_admin;
+-- show tables;
+-- delete from user_file where user_email="sajal@gmail.com";
+-- desc user_reg;
+-- desc user_file;
+-- desc book_category;
+-- insert into book_category(category) values("hindi");
+-- select*from book_category;
+-- delete FROM book_category where category="english";
+-- select*from user_reg;
+-- select*from user_file;
+-- delete from user_reg where user_name="param";
+-- create table user_file(
+--     user_email varchar(255) not null,
+--     user_image varchar(255) not null,
+--     user_image_path varchar(255) not null,
+--     user_image_uniqe_id varchar(255) not null,
+--     FOREIGN KEY (user_email) REFERENCES user_reg(user_email)
+-- );
+
+-- alter table user_file MODIFY COLUMN user_image_uniqe_id varchar(255);
+-- select*from super_admin;
+-- desc super_admin;
+-- ALTER TABLE super_admin ADD COLUMN s_admin_created DATE NOT NULL;
+-- ALTER TABLE super_admin ADD s_admin_created date not null;
+-- alter table super_admin MODIFY COLUMN s_admin_image varchar(255);
+-- alter table super_admin DROP COLUMN s_admin_id;
+
+-- ALTER TABLE user_file
+-- ADD FOREIGN KEY (user_email) REFERENCES user_reg(user_email);
+-- delete from user_reg where user_email="sajal@gmail.com";
+-- delete from user_file where user_email="sajal@gmail.com";
+-- show tables;
+-- desc book_category;
+-- create table book_category(
+--     category varchar(255) not null,
+--     PRIMARY KEY(category)
+-- );
+-- ALTER TABLE book 
+-- ADD CONSTRAINT category
+-- FOREIGN KEY(book_category) 
+-- REFERENCES book_category(category);
+-- desc book;
+-- drop table book;
+-- create table book(
+--     book_id varchar(255) NOT NULL,
+--     book_sku varchar(20) NOT NULL,
+--     book_title varchar(50) NOT NULL,
+--     book_author varchar(50) NOT NULL,
+--     book_category varchar(255) NOT NULL,
+--     book_discription text NOT NULL,
+--     book_quantity int NOT NULL,
+--     book_price int NOT NULL,
+--     book_sale_price int NOT NULL,
+--     book_image varchar(255) NOT NULL,
+--     book_path varchar(255) NOT NULL,
+--     book_uploaded date not null,
+--     book_modified date not null,
+--     PRIMARY KEY(Book_SKU)
+-- );
+-- ALTER TABLE book MODIFY COLUMN book_desc text NOT NULL;
+-- drop table book;
+-- show tables;
+-- desc user_file;
+-- create table book_file(
+--     book_sku varchar(20) NOT NULL,
+--     book_image varchar(255) NOT NULL,
+--     book_path varchar(255) NOT NULL,
+--     book_unique varchar(255) NOT NULL,
+--     FOREIGN KEY (book_sku) REFERENCES book(book_sku)
+-- );
+-- show tables;
+-- desc book_file;
+-- ALTER TABLE book add book_unique_id varchar(255) NOT NULL;
+-- select*from user_reg;
+-- SELECT COUNT(book_sku) FROM book;
+-- -- select*from book;
+-- drop table book_category;
+-- alter table book_category DROP COLUMN category_image;
+
+-- select*from user_reg;
+
+-- create table cart(
+--  user_email varchar(255) not null,
+--  book_sku varchar(255) not null 
+-- );
+-- desc cart;
+-- select*from cart;
+-- delete from cart where book_sku='romance-1';
+-- drop table cart;
+
+-- SELECT book_sku FROM cart where user_email='sajal@gmail.com';
+-- create table orders(
+--     order_id varchar(255) not null,
+--     customer_email varchar(255) not null,
+--     customer_name varchar(255) not null,
+--     customer_phone int(10) not null,
+--     customer_address text not null,
+--     book_sku varchar(255) not null,
+--     order_date date not null,
+--     return_date date not null,
+--     payment varchar(255) not null,
+--     Note text 
+-- );
+alter table admin MODIFY COLUMN admin_id varchar(255);
+-- select*from orders;
+-- -- drop table orders;
+-- delete from orders where customer_email="sajal@gmail.com";
+-- delete from return_order where customer_email="sajal@gmail.com";
+
+-- create table return_order(
+--     customer_email varchar(255) not null,    
+--     book_sku varchar(255) not null,
+--     order_date date not null,
+--     return_date date not null,
+--     review text 
+-- );
+-- desc user_file;
+-- select*from user_reg;
+-- select*from user_file;
+
+-- alter table orders add order_id varchar(255) not null;
+-- select*from return_order;
+-- select*from orders;
+-- SELECT * FROM book LEFT JOIN orders ON book.book_sku=orders.book_sku LEFT JOIN return_order ON book.book_sku=return_order.book_sku WHERE return_order.book_sku='POETRY-1';
+-- delete from user_reg where user_email='sajal@gmail.com';
+-- delete from user_file where user_email='sajal@gmail.com';
+-- alter table user_file MODIFY COLUMN user_image_uniqe_id varchar(255);
+-- select*from super_admin
+
+
+
