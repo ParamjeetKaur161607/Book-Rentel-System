@@ -2,9 +2,10 @@
 require("ADMIN_PANEL.PHP");
 
 if (isset($_POST['add_category'])) {
-    $object_validation->category();
-    if (empty($object_validation->error_category)) {
-        $object_database->insert_to_category('book_category', $object_validation->category);
+    $object_BookValidationHandler->isCategoryValid();
+    if (!strlen($object_BookValidationHandler->error_category)) {
+        $data=['category'=>$object_BookValidationHandler->category];
+        $object_CRUD->insertRecord('book_category',$data);
         header('location: ALL_BOOKS.PHP');
     }
 }
@@ -25,7 +26,7 @@ if (isset($_POST['add_category'])) {
                 <div class="flex flex-col">
                     <label for="category">Category</label>
                     <input type="text" name="category" id="category" class="p-2 h-10 bg-gray-300 border-gray-400 border-b outline-none">
-                    <span class="text-red-500 py-5"><?php echo $object_validation->error_category; ?></span>
+                    <span class="text-red-500 py-5"><?php echo $object_BookValidationHandler->error_category; ?></span>
 
                 </div>                
                 <div class="flex flex-col">

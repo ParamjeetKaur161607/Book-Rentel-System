@@ -1,9 +1,8 @@
 <?php
 require("ADMIN_PANEL.PHP");
-$object_database->all_orders();
-// echo "<pre>";
-// print_r($object_database->all_orders);
-// echo "</pre>";
+$all_orders=$object_CRUD->getRecords('orders');
+
+// var_dump($all_orders[]);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,47 +20,55 @@ $object_database->all_orders();
 
         <ol class="list-decimal">
             <?php 
-            if(isset($object_database->all_orders)):
-            foreach ($object_database->all_orders as $key => $value):                
-                $object_database->view_book_data($value['book_sku']);
+            if(isset($all_orders)):
+            foreach ($all_orders as $key => $value):   
+                $object_CRUD->getJoinOrders('orders','books','books_price','sku','sku',$value['sku']);
+                $emails=$object_CRUD->getRecord('user_registration','email','id',$value['user_id']); 
+                             
                 ?>
 
                 <li class="bg-white mt-7 rounded-xl p-6 flex gap-10">
                     <div class="h-28 w-28 border">
                         <?=
-                            '<img src="BOOKS_IMAGES/' . $object_database->row['book_image'] . '" alt=""
+                            '<img src="BOOKS_IMAGES/' . $object_CRUD->row['cover_image'] . '" alt=""
                                 class="h-full w-full object-fit">'
                             ?>
                     </div>
                     <div class="flex justify-between w-full">
                         <div class="space-y-3 w-full">
                             <div class="flex justify-between">
-                                <div>
+                                <div class="flex gap-2 items-center">
                                     <h2 class="font-bold text-2xl"><?= $value['customer_name']; ?></h2>
-                                    <div class="flex gap-1 items-center">
-                                        <h3>#<?= $value['order_id']; ?></h3>
-                                        <p>(Rs. <?= $value['order_id']; ?>)</p>
-                                    </div>
+                                    <h3 class="text-sm">#<?= $value['order_id']; ?></h3>
+                                    <p>(Rs. <?= $value['payment']; ?>)</p>
                                 </div>
-                                <div class="space-x-3">
+                                <div class="space-x-3 flex gap-3 items-center">
                                     <a href="tel:<?php $value['customer_phone']; ?>"
                                         class="underline"><?= $value['customer_phone']; ?></a>
-                                    <a href="mailto:<?php $value['customer_email']; ?>"
-                                        class="underline"><?= $value['customer_email']; ?></a>
+                                        <?php foreach($emails as $key => $values):?>
+                                    <a href="mailto:<?php $emails[0]['email'] ?>"
+                                        class="underline"><?= $values['email']; ?></a>  
+                                        <?php  endforeach;?>                                      
+                                    <p class="bg-blue-100 px-2 rounded-lg font-bold"><?= $value['user_id']; ?></p>
                                 </div>
                             </div>
                             <div class="flex justify-between w-full">
                                 <ul class="font-semi-bold text-lg">
-                                    <li>Qty: 1</li>
-                                    <li><?= $value['book_sku']; ?></li>
+                                    <li><b>Quantity: </b> 1</li>
+                                    <li><b>SKU: </b><?=$object_CRUD->row['sku']; ?></li>
+
+                                </ul>
+                                <ul class="font-semi-bold text-lg">
+                                <li><b>Title: </b><?=$object_CRUD->row['title']; ?></li>
+                                    <li><b>Author: </b><?=$object_CRUD->row['author']; ?></li>
 
                                 </ul>
                                 <ul>
-                                    <li>Order Date: <?= $value['order_date']; ?></li>
-                                    <li>Return Date: <?= $value['return_date']; ?></li>
+                                    <li><b>Order Date: </b><?= $value['order_date']; ?></li>
+                                    <li><b>Return Date: </b><?= $value['return_date']; ?></li>
                                 </ul>
                                 <ul>
-                                    <li><?= $value['customer_address']; ?></li>
+                                    <li><b>Address: </b><?= $value['customer_address']; ?></li>
                                 </ul>
                             </div>
                         </div>

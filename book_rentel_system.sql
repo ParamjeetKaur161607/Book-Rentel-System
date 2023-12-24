@@ -1,75 +1,121 @@
 -- use book_rentel_system;
 -- show tables;
--- desc books;
+
 -- desc book_category;
 -- ALTER TABLE user_reg
 -- MODIFY COLUMN user_id varchar(255) not null;
-
--- create database BookRentelSystem;
-
-
-use bookrentelsystem;
--- show tables;
+-- use bookrentelsystem;
+-- desc book;
+-- select * from book where category='None';
+-- desc cart;
 -- select*from user_reg;
 -- select*from book;
 -- select*from user_file;
 -- delete from user_reg where user_email='sajal@gmail.com';
-
--- create table user_reg(
---     user_id varchar(255) not null,
---     user_email varchar(255) not null,
---     user_phone varchar(10) not null,
---     user_name varchar(255) not null,
---     user_gender varchar(20) not null,
---     user_dob date not null,
---     user_address varchar(255) not null,      
---     card_number varchar(16) not null,
---     name_on_card varchar(255) not null,
---     cvv varchar(3) not null,
---     expiry_month int not null,
---     expiry_year int not null,
---     user_security_question varchar(255) not null,
---     user_password varchar(255) not null,
---     user_status varchar(20) not null,
---     user_created date not null,
---     user_modified date not null,
---     PRIMARY KEY(user_email)
--- );
-
+-- create database BookRentelSystem;
+-- create database SecondStoryBookStore;
+use SecondStoryBookStore;
+-- desc validate_return_date;
+-- SELECT * FROM books;
 -- show tables;
--- create table super_admin(     
---     s_admin_id int not null,
---     s_admin_email varchar(255) not null,
---     s_admin_phone varchar(10) not null,
---     s_admin_name varchar(255) not null,
---     s_admin_gender varchar(20) not null,
---     s_admin_dob date not null,
---     s_admin_address text not null,   
---     s_admin_password varchar(255) not null,
---     s_admin_image varchar(255),
---     s_admin_created date not null,
---     s_admin_modified date not null,
---     PRIMARY KEY(s_admin_email)
+-- select*from return_order;
+-- ALTER TABLE orders ADD subtotal int;
+-- select*from Book_category;
+-- desc books;
+-- ALTER TABLE books ADD FOREIGN KEY (category) REFERENCES book_category(category);
+-- select sku, from books where category='English';
+-- alter table books MODIFY COLUMN category varchar(255) not null;
+-- select title from books where 'category'='Novel';
+-- desc validate_return_date;
+-- select*from return_order;
+-- select* from validate_return_date;
+-- delete from books where sku='Novel-3';
+-- ALTER TABLE orders ADD review text;
+-- delete from orders where order_id='6585bc81cb834';
+
+-- create table validate_return_date(
+--     user_id varchar(255) not null,
+--     return_date date not null
 -- );
+desc return_order;
+-- create table cart(
+--     id varchar(255) not null,
+--     sku varchar(255) not null,
+--     FOREIGN KEY (id) REFERENCES user_registration(id),
+--     FOREIGN KEY (sku) REFERENCES books(sku)
+-- )
+-- select* from cart;
+-- ALTER TABLE cart DROP email;
+-- show tables;
+-- desc books;
+-- desc user_registration;
+-- ALTER TABLE admin
+-- MODIFY COLUMN id varchar(255);
+-- select*from books; 
+-- select*from books_price; 
+
+-- delete from books where sku='Novel-3';
+-- select*from books_price;  
+
+-- delete from book_category where category=null;
+
+-- delete from admin where email='sajal@gmail.com';
+-- desc user_registration
+-- create table user_registration(
+--     id varchar(255) not null,
+--     email varchar(255) not null,
+--     phone varchar(10) not null,
+--     name varchar(255) not null,
+--     gender varchar(20) not null,
+--     dob date not null,
+--     address varchar(255) not null,   
+--     security_question varchar(255) not null,
+--     password varchar(255) not null,
+--     status varchar(20) not null,
+--     registration_date date not null,
+--     modified_date date not null,
+--     profile_picture varchar(255),
+--     PRIMARY KEY(id)
+-- );
+
+-- desc user_registration;
+-- select*from user_registration;
+-- delete from user_registration where email="jyoti@gmail.com";
+-- create table super_admin(     
+--     id int not null,
+--     email varchar(255) not null,
+--     phone varchar(10) not null,
+--     name varchar(255) not null,
+--     gender varchar(20) not null,
+--     dob date not null,
+--     address text not null,   
+--     password varchar(255) not null,
+--     profile_picture varchar(255),
+--     admin_created date not null,
+--     admin_modified date not null,    
+--     PRIMARY KEY(id)
+-- );
+-- desc super_admin;
+-- show tables;
 
 -- create table admin(     
---     admin_id int not null,
---     admin_email varchar(255) not null,
---     admin_phone varchar(10) not null,
---     admin_name varchar(255) not null,
---     admin_gender varchar(20) not null,
---     admin_dob date not null,
---     admin_address text not null,   
---     admin_password varchar(255) not null,
---     admin_image varchar(255),
+--     id int not null,
+--     email varchar(255) not null,
+--     phone varchar(10) not null,
+--     name varchar(255) not null,
+--     gender varchar(20) not null,
+--     dob date not null,
+--     address text not null,   
+--     password varchar(255) not null,
+--     profile_picture varchar(255),
 --     admin_created date not null,
 --     admin_modified date not null,
---     PRIMARY KEY(admin_email)
+--     PRIMARY KEY(id)
 -- );
+-- desc admin;
 -- drop table super_admin;
 -- desc super_admin;
--- insert into super_admin(s_admin_email,s_admin_phone,s_admin_name,s_admin_gender,
--- s_admin_dob,s_admin_address,s_admin_password) values('paramjeetkaur161607@gmail.com','7973276717','Paramjeet Kaur','Female','2002-10-07','#Param,Chandigarh','Paramjeet@161607');
+-- insert into super_admin(id, email, phone, name, gender, dob, address, password, profile_picture, admin_created, admin_modified) values(1,'paramjeetkaur@gmail.com', 7973276717,'Paramjeet Kaur','female','2002-10-07','chandigarh', 'Param@161607','super.jpg',now(),now());
 -- select*from super_admin;
 -- delete from super_admin where s_admin_email="paramjeetkaur@gmail.com";
 -- ALTER TABLE super_admin MODIFY COLUMN s_admin_password varchar(255) not null;
@@ -108,33 +154,39 @@ use bookrentelsystem;
 -- delete from user_reg where user_email="sajal@gmail.com";
 -- delete from user_file where user_email="sajal@gmail.com";
 -- show tables;
--- desc book_category;
+-- -- desc book_category;
 -- create table book_category(
 --     category varchar(255) not null,
 --     PRIMARY KEY(category)
 -- );
+-- drop table book_category;
 -- ALTER TABLE book 
 -- ADD CONSTRAINT category
 -- FOREIGN KEY(book_category) 
 -- REFERENCES book_category(category);
--- desc book;
+-- desc books;
 -- drop table book;
--- create table book(
---     book_id varchar(255) NOT NULL,
---     book_sku varchar(20) NOT NULL,
---     book_title varchar(50) NOT NULL,
---     book_author varchar(50) NOT NULL,
---     book_category varchar(255) NOT NULL,
---     book_discription text NOT NULL,
---     book_quantity int NOT NULL,
---     book_price int NOT NULL,
---     book_sale_price int NOT NULL,
---     book_image varchar(255) NOT NULL,
---     book_path varchar(255) NOT NULL,
+-- create table books(
+--     id varchar(255) NOT NULL,
+--     sku varchar(20) NOT NULL,
+--     title varchar(50) NOT NULL,
+--     author varchar(50) NOT NULL,
+--     category varchar(255) NOT NULL,
+--     discription text NOT NULL,
+--     quantity int NOT NULL,
+--     cover_image varchar(255) NOT NULL,
 --     book_uploaded date not null,
 --     book_modified date not null,
---     PRIMARY KEY(Book_SKU)
+--     PRIMARY KEY(sku)
 -- );
+-- drop table books;
+-- create table books_price(
+--     sku varchar(20) NOT NULL,
+--     mrp int NOT NULL,
+--     per_day_price int NOT NULL,
+--     FOREIGN KEY (sku) REFERENCES books(sku)
+-- );
+-- show tables;
 -- ALTER TABLE book MODIFY COLUMN book_desc text NOT NULL;
 -- drop table book;
 -- show tables;
@@ -169,25 +221,26 @@ use bookrentelsystem;
 -- SELECT book_sku FROM cart where user_email='sajal@gmail.com';
 -- create table orders(
 --     order_id varchar(255) not null,
---     customer_email varchar(255) not null,
+--     user_id varchar(255) not null,
 --     customer_name varchar(255) not null,
 --     customer_phone int(10) not null,
 --     customer_address text not null,
---     book_sku varchar(255) not null,
+--     sku varchar(255) not null,
 --     order_date date not null,
 --     return_date date not null,
 --     payment varchar(255) not null,
---     Note text 
+--     Note text,
+--     PRIMARY KEY(order_id)    
 -- );
-alter table admin MODIFY COLUMN admin_id varchar(255);
+-- alter table admin MODIFY COLUMN admin_id varchar(255);
 -- select*from orders;
 -- -- drop table orders;
 -- delete from orders where customer_email="sajal@gmail.com";
 -- delete from return_order where customer_email="sajal@gmail.com";
 
 -- create table return_order(
---     customer_email varchar(255) not null,    
---     book_sku varchar(255) not null,
+--     user_id varchar(255) not null,    
+--     sku varchar(255) not null,
 --     order_date date not null,
 --     return_date date not null,
 --     review text 

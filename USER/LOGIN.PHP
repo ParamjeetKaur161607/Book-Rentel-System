@@ -1,9 +1,11 @@
-<?php  include("USER_MENU.PHP"); 
+<?php  
 
-
+include("USER_MENU.PHP"); 
 if (isset($_POST['login_user'])) {
-    $object_validation->user_login();
+    $object_LoginValidationHandler->user_login();
+    
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,13 +45,13 @@ if (isset($_POST['login_user'])) {
                     </div>
                     <div class="text-red-500 text-center w-full P-5">
                         <?php
-                        echo $object_validation->error_email;
-                        echo $object_validation->error_password;
+                        echo $object_LoginValidationHandler->error_email;
+                        echo $object_LoginValidationHandler->error_password;
                         ?>
                     </div>
                 </form>
                 <div class="px-10 flex justify-between">
-                    <a href="REGISTER.PHP" class="text-blue-600 underline">Register yourself if you have't account
+                    <a href="USER_REGISTER.PHP" class="text-blue-600 underline">Register yourself if you have't account
                         yet.</a>
                     <a href="#" class="text-blue-600 underline">forget password</a>
                 </div>

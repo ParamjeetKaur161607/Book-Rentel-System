@@ -19,7 +19,7 @@ require("ADMIN_PANEL.PHP");
                     <select name="book_category" id="book_category" class=" border-gray-400 h-10 p-2 h-10 bg-gray-300 border-b outline-none">
                     <option value="none" selected disabled hidden>Select Book category</option>
                     <?php 
-                        $object_validation->category = $object_database->get_all_category();                     
+                        $object_validation->category = $object_CRUD->getAllRecords('book_category','category');                     
                         foreach ($object_validation->category as $category) {                            
                             if ($category == "None") {
                                 continue;  // Skip displaying "NO CATEGORY"

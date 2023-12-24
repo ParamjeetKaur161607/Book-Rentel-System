@@ -5,7 +5,9 @@ if (isset($_POST['add_admin'])) {
     $object_validation->is_dob_valid();
     $object_validation->is_gender_valid();
     $object_validation->is_email_valid();
+    $object_validation->is_admin_email_exists();
     $object_validation->is_phone_valid();
+    $object_validation->is_admin_phone_exist();
     $object_validation->is_address_valid();    
     $object_validation->is_password_valid(); 
     $errorVariables = [
@@ -19,83 +21,47 @@ if (isset($_POST['add_admin'])) {
     ];
     if ($object_validation->is_array_empty($errorVariables)) {
         $encrypted_password = password_hash($object_validation->password, PASSWORD_DEFAULT);
-        
-        if ($_FILES["profile_picture"]["name"] != "") {
-            $object_validation->is_admin_file_valid();
-            if (!strlen($object_validation->error_profile_picture)) {
-                if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $object_validation->profile_picture_path)) {
-                    $data_to_insert_in_admin = array(
-                        "admin_id" => $object_database->unique_id(),
-                        "admin_email" => "$object_validation->email",
-                        "admin_phone" => "$object_validation->phone",
-                        "admin_name" => "$object_validation->name",
-                        "admin_gender" => "$object_validation->gender",
-                        "admin_dob" => "$object_validation->dob",
-                        "admin_address" => "$object_validation->address",            
-                        "admin_password" => "$encrypted_password",
-                        "admin_image" => "$object_validation->profile_picture_name",
-                        "admin_created" => $object_database->current_date(),
-                        "admin_modified" => $object_database->current_date()
-                    );
-                    $object_database->insert_to_admin("admin",$data_to_insert_in_admin);
-                } else {
-                    $object_validation->error_file = "file location error";
-                }
+        if ($_FILES['profile_picture']['name'] != "") {
+            $object_validation->is_admin_profile_picture_valid();
+
+            if (!strlen($object_validation->error_profile_picture) && move_uploaded_file($object_validation->profile_picture["tmp_name"], $object_validation->profile_picture_path)) {
+
+                $pp_name = $object_validation->profile_picture_name;
+
+            } else {
+                $object_validation->error_file = "file location error";
             }
+
         } else {
-            $data_to_insert_in_admin = array(
-                "admin_id" => $object_database->unique_id(),
-                "admin_email" => "$object_validation->email",
-                "admin_phone" => "$object_validation->phone",
-                "admin_name" => "$object_validation->name",
-                "admin_gender" => "$object_validation->gender",
-                "admin_dob" => "$object_validation->dob",
-                "admin_address" => "$object_validation->address",            
-                "admin_password" => "$encrypted_password",
-                "admin_image" => " ",
-                "admin_created" => $object_database->current_date(),
-                "admin_modified" => $object_database->current_date()
-            );
-            $object_database->insert_to_admin("admin",$data_to_insert_in_admin);
-            header("location: ADMINS.PHP");
+            $pp_name = " ";
         }
-        
 
-        
+        $insert_data = array(
+            "id" => $object_database->unique_id(),
+            "email" => "$object_validation->email",
+            "phone" => "$object_validation->phone",
+            "name" => "$object_validation->name",
+            "gender" => "$object_validation->gender",
+            "dob" => "$object_validation->dob",
+            "address" => "$object_validation->address",
+            "password" => "$encrypted_password",
+            "profile_picture" => "$pp_name",
+            "admin_created" => $object_database->current_date(),
+            "admin_modified" => $object_database->current_date()
+        );
 
+        $object_CRUD->insertRecord("admin", $insert_data);
 
-
-
-        // if ($object_validation->profile_picture["name"] != "") {
-        //     $object_validation->is_profile_picture_valid();
-        //     if (!strlen($object_validation->error_profile_picture)) {
-        //         if (move_uploaded_file($object_validation->profile_picture["tmp_name"], $object_validation->profile_picture_path)) {
-        //             $data_to_insert_in_user_file = array(
-        //                 "user_email" => "$object_validation->email",
-        //                 "user_image" => "$object_validation->profile_picture_name",
-        //                 "user_image_path" => "$object_validation->profile_picture_path",
-        //                 "user_image_uniqe_id" => $object_database->unique_id()
-        //             );
-        //             $object_database->insert_to_user_reg("user_reg", $data_to_insert_in_user_reg);
-        //             $object_database->insert_to_user_file("user_fle", $data_to_insert_in_user_file);
-        //             header('Location: LOGIN.PHP');
-        //         } else {
-        //             $object_validation->error_file = "file location error";
-        //         }
-        //     }
-        // } else {
-        //     $object_database->insert_to_user_reg("user_reg", $data_to_insert_in_user_reg);
-        //     $data_to_insert_in_user_file = array(
-        //         "user_email" => "$object_validation->email"
-        //     );
-        //     $data_to_insert_in_user_file = array(
-        //         "user_email" => "$object_validation->email",
-        //     );
-        //     $object_database->insert_to_user_file("user_fle", $data_to_insert_in_user_file);
-        //     header('Location: LOGIN.PHP');
-        // }
-
+        header('Location: ADMIN_DASHBOARD.PHP');
     }
+        
+
+        
+
+
+
+
+    
 }
 ?>
 <!DOCTYPE html>

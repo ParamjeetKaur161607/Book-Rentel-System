@@ -1,4 +1,9 @@
-<?php include("USER_MENU.PHP");?>
+<?php include("USER_MENU.PHP");
+$id=$_GET['book_category'];
+$sku=$object_CRUD->getRecord('books','sku','category',$_GET['book_category']);
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,10 +20,14 @@
 
         <section class="px-20 space-y-10 pb-20 py-10">
             <div class="flex divide-x justify-center bg-yellow-900/5 py-3">
-                <?php $object_validation->category = $object_database->get_all_category();
-                foreach ($object_validation->category as $key => $value): ?>
+            <?php $object_validation->category = $object_CRUD->getAllRecords('book_category', 'category');
+                foreach ($object_validation->category as $key => $value):
+                    if ($value == 'None') {
+                        continue;
+                    }
+                    ?>
                     <form action="BOOKS_CATEGORY.PHP?book_category=<?php echo $value; ?>" method="post">
-                        <button class="text-3xl font bold capitalize px-5">
+                        <button class="px-2 underline">
                             <?php
                             echo $value; ?>
                         </button>
@@ -26,27 +35,29 @@
                 <?php endforeach; ?>
             </div>
             <ul class="grid grid-cols-5 gap-20">
-                <?php $all_books = $object_database->books_category_wise($_GET['book_category']);
-                if (isset($all_books)):
-                    foreach ($all_books as $key => $value): ?>
+            <?php
+            if (isset($sku)):
+                foreach ($sku as $key => $value): 
+                $object_CRUD->getJoinbook('books','books_price','sku', $value['sku']);
+                ?>
                         <li class="w-full h-full">
                             <div class="rounded-md h-fit ">
                                 <div
                                     class="border bg-yellow-900/5 border-gray-300 p-4 text-center space-y-2 h-full peer relative rounded-lg">
                                     <div class="w-full h-64">
                                         <?=
-                                            '<img src="../admin/BOOKS_IMAGES/' . $all_books[$key]['book_image'] . '" alt=""
+                                            '<img src="../admin/BOOKS_IMAGES/' . $object_CRUD->row['cover_image'] . '" alt=""
                                 class="h-full border border-gray-300 w-full object-fit">'
                                             ?>
                                     </div>
                                     <h2 class="font-bold text-lg">
-                                        <?= $all_books[$key]['book_title']; ?>
+                                        <?= $object_CRUD->row['title']; ?>
                                     </h2>
                                     <h3 class="text-sm text-gray-500">
-                                        <?= $all_books[$key]['book_author']; ?>
+                                        <?= $object_CRUD->row['author']; ?>
                                     </h3>
                                     <p class="text-xl font-bold">
-                                        <?= $all_books[$key]['book_sale_price']; ?>/-
+                                        <?= $object_CRUD->row['per_day_price']; ?>/-
                                     </p>
                                     <form action="CART.PHP" method="post">
                                         <button name="add_to_cart" class="bg-yellow-900/60 text-white py-1 px-3 rounded-lg">Add to cart</button>

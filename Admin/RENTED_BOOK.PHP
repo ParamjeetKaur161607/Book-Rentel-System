@@ -1,6 +1,7 @@
 <?php
 require("ADMIN_PANEL.PHP");
-$object_database->all_returns();
+$pending_returns=$object_CRUD->getRecords('return_order');
+// var_dump($pending_returns);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,18 +13,20 @@ $object_database->all_returns();
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-200">
+<body class="">
     <section class="p-10 ml-80">
         <h1 class="text-5xl sm:text-2xl sm:font-bold">RENTED BOOKS</h1>
         <ol class="list-decimal">
-            <?php if(isset($object_database->all_returns)):?>
-            <?php foreach ($object_database->all_returns as $key => $value):
-                $object_database->books_orders($value['book_sku']);
+            <?php if(isset($pending_returns)):?>
+            <?php foreach ($pending_returns as $key => $value):
+                $object_CRUD->getJoinOrders('books','orders','return_order','sku','sku',"$value[sku]");
+                // var_dump($object_CRUD->row);
+                $emails=$object_CRUD->getRecord('user_registration','email','id',$value['user_id']);
                 ?>
-                <li class="bg-white mt-7 rounded-xl p-6 flex gap-10">
+                <li class="bg-gray-100 mt-7 rounded-xl p-6 flex gap-10 border">
                     <div class="h-28 w-28 border">
                         <?=
-                            '<img src="BOOKS_IMAGES/' . $object_database->row['book_image'] . '" alt=""
+                            '<img src="BOOKS_IMAGES/' . $object_CRUD->row['cover_image'] . '" alt=""
                         class="h-full w-full object-fit">'
                             ?>
                     </div>
@@ -31,25 +34,36 @@ $object_database->all_returns();
                         <div class="space-y-3 w-full">
                             <div class="flex justify-between">
                                 <div>
-                                    <h2 class="font-bold text-2xl"><?=$object_database->row['book_sku'];?></h2>
+                                    <h2 class="font-bold text-2xl"><?=$object_CRUD->row['sku'];?></h2>
                                     <div class="flex gap-1 items-center">
-                                        <h3>#<?=$object_database->row['order_id'];?></h3>
-                                        <p>(Rs.<?=$object_database->row['book_sale_price'];?>)</p>
+                                        <h3>#<?=$object_CRUD->row['order_id'];?></h3>
+                                        <p>(Rs.<?=$object_CRUD->row['payment'];?>)</p>
                                     </div>
                                 </div>
                                 <div class="space-x-3">
-                                    <a href="tel:<?$object_database->row['customer_phone'];?>" class="underline"><?=$object_database->row['customer_phone'];?></a>
-                                    <a href="mailto:<?$object_database->row['customer_email'];?>" class="underline"><?=$object_database->row['customer_email'];?></a>
+                                    <a href="tel:<?$object_CRUD->row['customer_phone'];?>" class="underline"><?=$object_CRUD->row['customer_phone'];?></a>
+                                    <?php foreach($emails as $key => $values):?>
+                                    <a href="mailto:<?php $emails[0]['email'] ?>"
+                                        class="underline"><?= $values['email']; ?></a>  
+                                    <?php  endforeach;?>                          
                                 </div>
                             </div>
                             <div class="flex justify-between w-full">
                                 <ul class="font-semi-bold text-lg flex justify-between w-full">
-                                    <!-- <li><?=$object_database->row['customer_email'];?></li> -->
-                                    <li>Book Title: <?=$object_database->row['book_title'];?></li>
-                                    <li>Book Author: <?=$object_database->row['book_author'];?></li>
-                                    <li>Order Date: <?=$object_database->row['order_date'];?></li>
-                                    <li>Return Date: <?=$object_database->row['return_date'];?></li>
-                                    <!-- <li>subtotal pending</li> -->
+                                    <li>Book Title: <?=$object_CRUD->row['title'];?></li>
+                                    <li>Book Author: <?=$object_CRUD->row['author'];?></li>
+                                    <li>Order Date: <?=$object_CRUD->row['order_date'];?></li>
+                                    <li>Return Date: <?=$object_CRUD->row['return_date'];?></li>
+                                    <li>Fine: 
+                                        <span class="bg-red-600 p-1 text-white rounded-md">Rs. 
+                                            <?php if(isset($object_CRUD->row['Fine'])){
+                                                echo $object_CRUD->row['Fine'];
+                                            } else {
+                                                echo "0";
+                                            }
+                                            ?>
+                                        </span>
+                                    </li>
                                 </ul>
                             </div>
                         </div>

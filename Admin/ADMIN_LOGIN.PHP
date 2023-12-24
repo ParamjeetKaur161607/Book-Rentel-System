@@ -23,7 +23,7 @@ include("../VALIDATION.PHP");
                     <div class="flex flex-col gap-2">
                         <label for="admin_email_login">Admin Email</label>
                         <input type="text" name="admin_email_login" id="admin_email_login"
-                            class="border-b border-gray-500 bg-grayy-200 h-10 outline-none" value="<?= "$object_validation->email" ;?>">
+                            class="border-b border-gray-500 bg-grayy-200 h-10 outline-none" value="<?= "$object_LoginValidationHandler->email" ;?>">
                     </div>
                     <div class="flex flex-col gap-2">
                         <label for="admin_password_login">Password</label>
@@ -35,8 +35,8 @@ include("../VALIDATION.PHP");
                     </div>
                     <div class="text-red-500 text-center w-full P-5">
                         <?php
-                        echo $object_validation->error_email;
-                        echo $object_validation->error_password;
+                        echo $object_LoginValidationHandler->error_email;
+                        echo $object_LoginValidationHandler->error_password;
                         ?>
                     </div>
                 </form>                

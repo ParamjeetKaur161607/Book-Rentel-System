@@ -1,90 +1,20 @@
 <?php
 require("ADMIN_PANEL.PHP");
-$id = $_GET['admin_id'];
 
-if (isset($_POST['delete_admin_self'])) {
-    $object_database->delete_admin($_GET['admin_id']);  
-    unset($_SESSION['admin_login']);    
-    header("location: ADMIN_LOGIN.PHP");                                      
+$id=$_GET['id'];
+$admin=$object_CRUD->getRecord('admin','id','id',$id);
+$super_admin=$object_CRUD->getRecord('super_admin','id','id',$id);
+
+if($admin==null){
+    foreach ($super_admin as $key => $value) {
+        $object_CRUD->getAllFields('super_admin','id',"$value[id]");
+    }    
+}else{
+    foreach ($admin as $key => $value) {
+        $object_CRUD->getAllFields('admin','id',"$value[id]");
+    } 
 }
 
-$object_database->admin($id);
-$object_database->super_admin($id);
-if (isset($_POST['update_admin'])) {
-    $object_validation->is_name_valid();
-    $object_validation->is_dob_valid();
-    $object_validation->is_gender_valid();
-    $object_validation->is_email_valid();
-    $object_validation->is_phone_valid();
-    $object_validation->is_address_valid();    
-    $object_validation->is_password_valid(); 
-    $errorVariables = [
-        $object_validation->error_name,
-        $object_validation->error_dob,
-        $object_validation->error_gender,
-        $object_validation->error_email,
-        $object_validation->error_phone,
-        $object_validation->error_address,        
-        $object_validation->error_password,
-    ];
-    if ($object_validation->is_array_empty($errorVariables)) {        
-        if ($_FILES["profile_picture"]["name"] != "") {
-            $object_validation->is_admin_file_valid();
-            if (!strlen($object_validation->error_profile_picture)) {
-                if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $object_validation->profile_picture_path)) {
-                    $object_database->update_to_admin($id,$_POST['phone'],$_POST['name'],$_POST['gender'],$_POST['dob'],$_POST['address'],$object_database->current_date());
-                    $object_database->update_admin_file($id,$object_validation->profile_picture_name);
-                    header("location: ADMIN_DASHBOARD.PHP");
-                } else {
-                    $object_validation->error_file = "file location error";
-                }
-            }
-        } else {
-            $object_database->update_to_admin($id,$_POST['phone'],$_POST['name'],$_POST['gender'],$_POST['dob'],$_POST['address'],$object_database->current_date());
-            header("location: ADMIN_DASHBOARD.PHP");
-        }        
-    }     
-}
-
-if (isset($_POST['update_super_admin'])) {
-    $object_validation->is_name_valid();
-    $object_validation->is_dob_valid();
-    $object_validation->is_gender_valid();
-    $object_validation->is_email_valid();
-    $object_validation->is_phone_valid();
-    $object_validation->is_address_valid();    
-    $object_validation->is_password_valid();
-    $errorVariables = [
-        $object_validation->error_name,
-        $object_validation->error_dob,
-        $object_validation->error_gender,
-        $object_validation->error_email,
-        $object_validation->error_phone,
-        $object_validation->error_address,        
-        $object_validation->error_password,
-    ];
-    $date = date("Y-m-d");
-    if ($object_validation->is_array_empty($errorVariables)) {        
-        if ($_FILES["profile_picture"]["name"] != "") {
-            $object_validation->is_admin_file_valid();
-            if (!strlen($object_validation->error_profile_picture)) {
-                if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $object_validation->profile_picture_path)) {
-                    if(isset($object_database->row))
-                    $object_database->update_to_super_admin($id,$_POST['phone'],$_POST['name'],$_POST['gender'],$_POST['dob'],$_POST['address'],$object_database->current_date());
-
-                    $object_database->update_super_admin_file($id,$object_validation->profile_picture_name);
-
-                    header("location: ADMIN_DASHBOARD.PHP");
-                } else {
-                    $object_validation->error_file = "file location error";
-                }
-            }
-        } else {
-            $object_database->update_to_super_admin($id,$_POST['phone'],$_POST['name'],$_POST['gender'],$_POST['dob'],$_POST['address'],$object_database->current_date());
-            header("location: ADMIN_DASHBOARD.PHP");
-        }        
-    }     
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -98,6 +28,7 @@ if (isset($_POST['update_super_admin'])) {
 
 <body class="">
     <main>
+    <?php  ?>
         <section class="flex pl-80">
 
             <div class="w-full p-20 space-y-5">
@@ -106,13 +37,9 @@ if (isset($_POST['update_super_admin'])) {
                     enctype="multipart/form-data">
                     <div class="flex flex-col">
                         <label for="name">Admin Name</label>
-                        <input type="text" name="name" id="admin_name"
+                        <input type="text" name="name" id="name"
                             class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500" value="<?php
-                            if (isset($object_database->row['admin_name'])) {
-                                echo $object_database->row['admin_name'];
-                            } else {
-                                echo $object_database->row1['s_admin_name'];
-                            }
+                            echo $object_CRUD->record['name'];                            
                             ?>">
 
                         <span class="text-red-500 text-sm">
@@ -123,11 +50,8 @@ if (isset($_POST['update_super_admin'])) {
                         <label for="email">Admin Email</label>
                         <input type="text" name="email" id="email"
                             class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500" value="<?php
-                            if (isset($object_database->row['admin_email'])) {
-                                echo $object_database->row['admin_email'];
-                            } else {
-                                echo $object_database->row1['s_admin_email'];
-                            }
+                            echo $object_CRUD->record['email'];
+                            
                             ?>">
                         <span class="text-red-500 text-sm">
                             <?php echo $object_validation->error_email ?>
@@ -137,11 +61,7 @@ if (isset($_POST['update_super_admin'])) {
                         <label for="phone">Admin Phone</label>
                         <input type="text" name="phone" id="phone"
                             class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500" value="<?php
-                            if (isset($object_database->row['admin_phone'])) {
-                                echo $object_database->row['admin_phone'];
-                            } else {
-                                echo $object_database->row1['s_admin_phone'];
-                            }
+                            echo $object_CRUD->record['phone'];                            
                             ?>">
                         <span class="text-red-500 text-sm">
                             <?php echo $object_validation->error_phone ?>
@@ -151,17 +71,10 @@ if (isset($_POST['update_super_admin'])) {
                         <div class="flex flex-col flex-1">
                             <label for="gender">Admin Gender</label>
                             <select name="gender" id="gender"
-                                class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500">
-                                <?php
-                                if (isset($object_database->row['admin_gender'])) {
-                                    echo $object_database->row['admin_gender'];
-                                } else {
-                                    echo $object_database->row1['s_admin_gender'];
-                                }
-                                ?>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="others">Others</option>
+                                class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500">                                
+                                <option value="male" <?php echo ($object_CRUD->record["gender"] === 'male') ? 'selected' : ''; ?>>Male</option>
+                            <option value="female" <?php echo ($object_CRUD->record["gender"] === 'female') ? 'selected' : ''; ?>>Female</option>
+                            <option value="others" <?php echo ($object_CRUD->record["gender"] === 'others') ? 'selected' : ''; ?>>Others</option>
                             </select>
                             <span class="text-red-500 text-sm">
                                 <?php echo $object_validation->error_gender; ?>
@@ -170,13 +83,7 @@ if (isset($_POST['update_super_admin'])) {
                         <div class="flex flex-col flex-1">
                             <label for="dob">Admin's DOB</label>
                             <input type="date" name="dob" id="dob"
-                                class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500" value="<?php
-                                if (isset($object_database->row['admin_dob'])) {
-                                    echo $object_database->row['admin_dob'];
-                                } else {
-                                    echo $object_database->row1['s_admin_dob'];
-                                }
-                                ?>">
+                                class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500" value="<?php echo $object_CRUD->record["dob"];?>">
                             <span class="text-red-500 text-sm">
                                 <?php echo $object_validation->error_dob; ?>
                             </span>
@@ -187,11 +94,7 @@ if (isset($_POST['update_super_admin'])) {
                         <label for="address">Admin Address</label>
                         <textarea name="address" id="" cols="30" rows="1"
                             class="outline-none pb-4 border-b border-gray-500 text-gray-500"><?php
-                            if (isset($object_database->row['admin_address'])) {
-                                echo $object_database->row['admin_address'];
-                            } else {
-                                echo $object_database->row1['s_admin_address'];
-                            }
+                            echo $object_CRUD->record['address'];                            
                             ?>
 
                         </textarea>
@@ -200,30 +103,35 @@ if (isset($_POST['update_super_admin'])) {
                         </span>
                     </div>
                     <div class="flex flex-col">
-                        <label for="password">Password</label>
+                        <label for="old_password">Password</label>
+                        <input type="password" name="old_password" id="old_password"
+                            class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500">
+                        <span class="text-red-500 text-sm">
+                            <?php echo $object_validation->old_password; ?>
+                        </span>
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="password">New Password</label>
                         <input type="password" name="password" id="password"
                             class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500">
                         <span class="text-red-500 text-sm">
                             <?php echo $object_validation->error_password ?>
                         </span>
                     </div>
-                    <div class="flex flex-col justify-end">
-                        <div class="flex justify-between">
+                    <div class="flex flex-col justify-end col-span-2">
+                        <div class="flex justify-between border-b border-gray-500">
                             <input type="file" name="profile_picture" id="profile_picture"
-                                class="outline-none bg-grayy-200 h-10 border-b border-gray-500">
+                                class="outline-none bg-grayy-200 h-10">
                             <?php
-                            if (isset($object_database->row['admin_image'])) {
-                                echo $object_database->row['admin_image'];
-                            } else {
-                                echo $object_database->row1['s_admin_image'];
-                            }
+                            echo $object_CRUD->record['profile_picture'];
+                            
                             ?>
                         </div>
                         <span class="text-red-500 text-sm">
                             <?php echo $object_validation->error_profile_picture ?>
                         </span>
                     </div>
-                    <?php if (isset($object_database->row['admin_id'])): ?>
+                    <?php if (isset($_SESSION['admin_login'])): ?>
                         <div class="flex flex-col col-span-2">
                             <button type="submit" name="update_admin"
                                 class="outline-none bg-green-400 rounded-lg p-3">Update</button>
@@ -236,7 +144,7 @@ if (isset($_POST['update_super_admin'])) {
                     <?php endif; ?>
 
                 </form>
-                <?php if(isset($object_database->row['admin_id'])):?>
+                <?php if(isset($_SESSION['admin_login'])):?>
                 <form action="" method="post" class="pr-10 flex justify-end">
                     <button name="delete_admin_self" class="bg-red-800 text-white px-5 py-1 rounded-md">Delete Account</button>
                 </form>
@@ -244,6 +152,7 @@ if (isset($_POST['update_super_admin'])) {
             </div>
 
         </section>
+        <?php ?>
     </main>
 </body>
 

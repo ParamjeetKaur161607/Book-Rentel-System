@@ -1,6 +1,7 @@
 <?php
 require("ADMIN_PANEL.PHP");
-$all_books = $object_database->books_category_wise($_GET['book_category']);
+$id=$_GET['book_category'];
+$sku=$object_CRUD->getRecord('books','sku','category',$_GET['book_category']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,23 +31,27 @@ $all_books = $object_database->books_category_wise($_GET['book_category']);
             <form action="ALL_BOOKS.PHP" method="post">
                 <button class="px-2 underline">ALL</button>
             </form>
-            <?php $object_validation->category = $object_database->get_all_category();
+            <?php $object_validation->category = $object_CRUD->getAllRecords('book_category','category');
             foreach ($object_validation->category as $key => $value): ?>
                 <form action="BOOK_CATEGORY.PHP?book_category=<?php echo $value; ?>" method="post">
-                    <button class="px-2 underline">
-                        <?php echo $value; ?>
+                    <button class="px-2 underline">                        
+                        <?php                        
+                        echo $value; ?>
                     </button>
-                </form>
-            <?php endforeach; ?>
+                </form>                
+            <?php endforeach;?>
         </div>
         <ul>
             <?php
-            if (isset($all_books)):
-                foreach ($all_books as $key => $value): ?>
+            if (isset($sku)):
+                foreach ($sku as $key => $value): 
+
+                    $object_CRUD->getJoinbook('books','books_price','sku', $value['sku']);
+                ?>
                     <li class="bg-gray-300 mt-7 rounded-xl p-6 flex items-center gap-10 text-gray-700">
                         <div class="h-28 w-24 border">
                             <?=
-                                '<img src="BOOKS_IMAGES/' . $all_books[$key]['book_image'] . '" alt=""
+                                '<img src="BOOKS_IMAGES/' . $object_CRUD->row['cover_image'] . '" alt=""
                         class="h-full w-full object-fit">'
                                 ?>
 
@@ -55,11 +60,11 @@ $all_books = $object_database->books_category_wise($_GET['book_category']);
                             <div class="space-y-5">
                                 <div class="flex gap-2 items-center">
                                     <h2 class="font-bold text-2xl">
-                                        <?= $all_books[$key]['book_title']; ?>
+                                        <?= $object_CRUD->row['title']; ?>
                                     </h2>
                                     <h3 class="font-bold text-lg">
                                         (
-                                        <?= $all_books[$key]['book_sku']; ?>)
+                                        <?= $object_CRUD->row['sku']; ?>)
                                     </h3>
                                 </div>
                                 <div class="flex font-semi-bold text-lg divide-x">
@@ -67,14 +72,14 @@ $all_books = $object_database->books_category_wise($_GET['book_category']);
                                         <div class="flex gap-2">
                                             <dt class="font-bold">Author:</dt>
                                             <dd>
-                                                <?= $all_books[$key]['book_author']; ?>
+                                                <?= $object_CRUD->row['author']; ?>
                                             </dd>
                                         </div>
 
                                         <div class="flex gap-2">
                                             <dt class="font-bold">category:</dt>
                                             <dd>
-                                                <?= $all_books[$key]['book_category']; ?>
+                                                <?= $object_CRUD->row['category']; ?>
                                             </dd>
                                         </div>
 
@@ -83,13 +88,13 @@ $all_books = $object_database->books_category_wise($_GET['book_category']);
                                         <div class="flex gap-2">
                                             <dt class="font-bold">Book Price:</dt>
                                             <dd>
-                                                <?= $all_books[$key]['book_price']; ?>/-
+                                                <?= $object_CRUD->row['mrp']; ?>/-
                                             </dd>
                                         </div>
                                         <div class="flex gap-2">
                                             <dt class="font-bold">Sale Price:</dt>
                                             <dd>
-                                                <?= $all_books[$key]['book_sale_price']; ?>/-
+                                                <?= $object_CRUD->row['per_day_price']; ?>/-
                                             </dd>
                                         </div>
                                     </dl>
@@ -97,14 +102,14 @@ $all_books = $object_database->books_category_wise($_GET['book_category']);
                                         <div class="flex gap-2">
                                             <dt class="font-bold">Uploaded:</dt>
                                             <dd>
-                                                <?= $all_books[$key]['book_uploaded']; ?>
+                                                <?= $object_CRUD->row['book_uploaded']; ?>
                                             </dd>
                                         </div>
 
                                         <div class="flex gap-2">
                                             <dt class="font-bold">Modified:</dt>
                                             <dd>
-                                                <?= $all_books[$key]['book_modified']; ?>
+                                                <?= $object_CRUD->row['book_modified']; ?>
                                             </dd>
                                         </div>
                                     </dl>
@@ -112,12 +117,12 @@ $all_books = $object_database->books_category_wise($_GET['book_category']);
                             </div>
                             <div class="flex gap-5">
                                 <form method="post"
-                                    action="UPDATE_BOOK.PHP?book_sku=<?php echo $all_books[$key]['book_sku']; ?>" class="">
+                                    action="UPDATE_BOOK.PHP?id=<?php echo $value; ?>" class="">
                                     <button id=""
                                         class="bg-green-700 text-white h-10 items-center flex justify-center px-5 rounded-full">Update</button>
                                 </form>
                                 <form method="post"
-                                    action="DELETE_BOOK.PHP?book_sku=<?php echo $all_books[$key]['book_sku']; ?>" class="">
+                                    action="DELETE_BOOK.PHP?id=<?php echo $value; ?>" class="">
                                     <button name=""
                                         class="bg-red-800 text-white h-10 items-center flex justify-center px-5 rounded-full">Delete</button>
                                 </form>

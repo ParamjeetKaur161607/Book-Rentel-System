@@ -4,7 +4,7 @@ include_once("DATABASE.PHP");
 // trait for validation checking
 trait validation_trait
 {
-    public $name, $email, $address, $phone, $gender, $dob, $security_question, $password, $card_number, $name_on_card, $cvv, $card_expiry_month, $card_expiry_year, $profile_picture, $profile_picture_name, $profile_picture_path, $date, $category, $duration, $payment, $start_date, $max_duration, $return_date, $sale_price, $daysDifference, $book_image_path, $book_image_name, $insert_data, $old_password,$alert,$search;
+    public $name, $email, $address, $phone, $gender, $dob, $security_question, $password, $card_number, $name_on_card, $cvv, $card_expiry_month, $card_expiry_year, $profile_picture, $profile_picture_name, $profile_picture_path, $date, $category, $duration, $payment, $start_date, $max_duration, $return_date, $sale_price, $daysDifference, $book_image_path, $book_image_name, $insert_data, $old_password;
 
     public $error_name, $error_email, $error_address, $error_phone, $error_gender, $error_dob, $error_security_question, $error_password, $error_card_number, $error_name_on_card, $error_cvv, $error_card_expiry_month, $error_card_expiry_year, $error_profile_picture, $error_category, $error_duration, $error_payment;
 
@@ -179,7 +179,7 @@ class BookValidationHandler extends database
 {
 
     use validation_trait;
-
+    
 
 
     /**
@@ -194,7 +194,7 @@ class BookValidationHandler extends database
         if (empty($this->category)) {
             $this->error_category = "Category can't be empty!";
         } else {
-            $category = $this->getAllRecords('book_category', 'category');
+            $category = $this->getAllRecords('book_category','category');
             if (in_array($this->category, $category)) {
                 $this->error_category = "This category is already existed, Please try again!";
                 return;
@@ -224,8 +224,8 @@ class BookValidationHandler extends database
             return;
         }
 
-
-        if (in_array($this->book_sku, $this->getAllRecords('books', 'sku'))) {
+       
+        if (in_array($this->book_sku, $this->getAllRecords('books','sku'))) {
             $this->error_book_sku = "This SKU is already existed in the database!";
             return;
         }
@@ -377,7 +377,7 @@ class OrderValidationHandler extends database
 {
     use validation_trait;
 
-
+    
     /**
      *Function to check whether the selected duretion date of rent is valid or not.
      *Validate that user can't select the past date as return date of the book.
@@ -522,12 +522,8 @@ class OrderValidationHandler extends database
     {
         $order_date = new DateTime($start_date);
         $return_date = new DateTime($end_date);
-        if($return_date >$order_date){
-            $interval = $order_date->diff($return_date);
-            return $interval->days;
-        }
-        
-        
+        $interval = $order_date->diff($return_date);
+        return $interval->days;
     }
 }
 
@@ -536,8 +532,7 @@ class OrderValidationHandler extends database
  *class for overall validation(user,admin..) 
  *
  */
-class ValidationHandler extends database
-{
+class ValidationHandler extends database{
     use validation_trait;
 
     /**
@@ -618,7 +613,7 @@ class ValidationHandler extends database
 
     public function is_user_email_exists()
     {
-        $all_emails = $this->getAllRecords('user_registration', 'email');
+        $all_emails = $this->getAllRecords('user_registration','email');
         if (in_array($this->email, $all_emails)) {
             $this->error_email = "This email is already associated with an account.!";
             return;
@@ -627,7 +622,7 @@ class ValidationHandler extends database
 
     public function is_admin_email_exists()
     {
-        $all_emails = $this->getAllRecords('admin', 'email');
+        $all_emails = $this->getAllRecords('admin','email');
         if (in_array($this->email, $all_emails)) {
             $this->error_email = "This email is already associated with an account.!";
             return;
@@ -662,7 +657,7 @@ class ValidationHandler extends database
 
     public function is_user_phone_exist()
     {
-        $all_phones = $this->getAllRecords('user_registration', 'phone');
+        $all_phones = $this->getAllRecords('user_registration','phone');
         if (in_array($this->phone, $all_phones)) {
             $this->error_phone = "This phone number is already associated with an account.!";
             return;
@@ -672,7 +667,7 @@ class ValidationHandler extends database
     public function is_admin_phone_exist()
     {
         if (isset($_SESSION['super_admin_login'])) {
-            $all_phones = $this->getAllRecords('admin', 'phone');
+            $all_phones = $this->getAllRecords('admin','phone');
             if (in_array($this->phone, $all_phones)) {
                 $this->error_phone = "This phone number is already associated with an account.!";
                 return;
@@ -822,7 +817,7 @@ class ValidationHandler extends database
 class LoginValidationHandler extends database
 {
     use validation_trait;
-
+        
     /**
      *Function to check whether the email is existed in the databse or not. 
      *If yes then check the password is valid or not.
@@ -834,20 +829,23 @@ class LoginValidationHandler extends database
     function user_login()
     {
         $this->email = $_POST['user_email_login'];
-        $this->password = $_POST['user_password_login'];        
-
-        if (!empty($_SESSION['login'])) {
+        $this->password = $_POST['user_password_login'];
+        
+        if(!empty($_SESSION['login'])){
             $this->error_email = "Can't login multiple users at the same time";
         } else {
-            $allEmails = $this->getAllRecords('user_registration', 'email');
+            
+        $allEmails = $this->getAllRecords('user_registration','email');
         if (in_array($this->email, $allEmails)) {
-            $this->getPassword('user_registration', $this->email);
+            $this->getPassword('user_registration',$this->email);
+
             if (password_verify($this->password, $this->hashedPassword)) {
-                $status = $this->getRecord('user_registration', 'status', 'email', $this->email);
-                if ($status[0]['status'] == 'ACTIVE' || $status[0]['status'] == 'active') {
+
+                $status=$this->getRecord('user_registration','status','email',$this->email);
+                if ($status['status'] == 'ACTIVE' || $status['status'] == 'active') {
                     if (!strlen($this->error_email) || !strlen($this->error_password)) {
-                        $id = $this->getRecord('user_registration', 'id', 'email', $this->email);
-                        $_SESSION['login'] = $id[0]['id'];
+                        $id=$this->getRecord('user_registration','id','email',$this->email);
+                        $_SESSION['login'] = $id['id'];
                         header("location: INDEX.PHP");
                     }
 
@@ -867,9 +865,6 @@ class LoginValidationHandler extends database
         }
 
         
-
-
-
     }
 
     /**
@@ -885,35 +880,32 @@ class LoginValidationHandler extends database
         $this->email = $_POST['admin_email_login'];
         $this->password = $_POST['admin_password_login'];
 
-        if (!empty($_SESSION['super_admin_login']) || !empty($_SESSION['admin_login'])) {
+        if(!empty($_SESSION['super_admin_login']) || !empty($_SESSION['admin_login'])){
             $this->error_email = "Can't Login Multiple Admins at the same time!";
-        }
-
-        $this->all_email = $this->getAllRecords('admin', 'email');
+        } else {
+            $this->all_email = $this->getAllRecords('admin','email');
         if (in_array($this->email, $this->all_email)) {
-            $this->getPassword('admin', $this->email);
+            $this->getPassword('admin',$this->email);
             if (password_verify($this->password, $this->hashedPassword)) {
 
                 if (!strlen($this->error_email) || !strlen($this->error_password)) {
-                    $id = $this->getRecord('admin', 'id', 'email', $this->email);
-                    $_SESSION['admin_login'] = $id[0]['id'];
+                    $id=$this->getRecord('admin','id','email',$this->email);
+                    $_SESSION['admin_login'] = $id['id'];
                     header("location:ADMIN_DASHBOARD.PHP");
                 }
 
             } else {
                 $this->error_password = 'Password is incorrect!';
             }
-                } 
-        else {
+        } else {
 
-            $super_admin_email = $this->getAllRecords('super_admin', 'email');
+            $super_admin_email = $this->getAllRecords('super_admin','email');
             if (in_array($this->email, $super_admin_email)) {
-                $password = $this->getRecord('super_admin', 'password', 'email', $this->email);
-                if ($this->password == $password[0]["password"]) {
+                $password=$this->getRecord('super_admin','password','email',$this->email);
+                if ($this->password == $password['password']) {
                     if (!strlen($this->error_email) || !strlen($this->error_password)) {
-                        $id = $this->getRecord('super_admin', 'id', 'email', $this->email);                        
-
-                        $_SESSION['super_admin_login'] = $id[0]['id'];
+                        $id=$this->getRecord('super_admin','id','email',$this->email);
+                        $_SESSION['super_admin_login'] = $id['id'];
                         header("location:ADMIN_DASHBOARD.PHP");
                     }
 
@@ -926,10 +918,10 @@ class LoginValidationHandler extends database
 
                 $this->error_email = 'Invelid Email!';
             }
-
+        }
         }
 
-
+        
 
 
 
@@ -945,19 +937,38 @@ $object_OrderValidationHandler = new OrderValidationHandler("localhost", "param"
 
 // $all_sku=$object_CRUD->getRecord('books','sku','category','Novel');
 // var_dump($all_sku);
-// $obj = new abc("localhost", "param", "161607", "SecondStoryBookStore");
-// $xyz = array('Novel-1', 'English-1');
+
+
+// $object_CRUD->getAllRecords('books',)
+
+
+// $object_database->getUserStatus('sajal@gmail.com');
+// var_dump($object_database->status);
 // var_dump($_SESSION);
-// $id = $object_CRUD->getRecord('super_admin', 'id', 'email', 'paramjeetkaur@gmail.com');
-// var_dump($id);
-// foreach ($xyz as $key => $value) {
-//     $obj->getJoin('books','books_price','sku',$value);
+// if(!empty($_SESSION['super_admin_login']) || !empty($_SESSION['admin_login'])){
+//     echo "you cant login";
+// } else {
+//     echo "you can login";
+// }
+// $result=$object_CRUD->getRecord('user_registration','email','email','sajal@gmail.com');
+// var_dump($result);
+// $result=$object_CRUD->getJoinBooks('books','books_price','sku'); 
+// var_dump($result);
+// $result=$object_CRUD->getRecords('admin'); 
+// foreach ($result as $key => $value) {
+//     var_dump($value);
+// }
+// // var_dump($result);
+// $all_sku=$object_CRUD->getRecord('books','sku','category','$id');
+// var_dump($all_sku);
 
-//     echo "<pre>";
-//     var_dump($obj->row);
-//     echo "<pre>";
 
-// // }
+if (isset($_POST['delete_user'])) {
+    $object_CRUD->deleteRecord('user_registration', 'id', $_SESSION['login']);
+    unset($_SESSION['login']);
+    header('location:LOGIN.PHP');
+}
+
 if (isset($_POST['delete_admin_self'])) {
     if (isset($_SESSION['admin_login'])) {
         $object_CRUD->deleteRecord('admin', 'id', $_SESSION['admin_login']);
@@ -972,7 +983,7 @@ if (isset($_POST['logut_user'])) {
 
 if (isset($_POST['delete_category'])) {
     $category = $_POST['book_category'];
-    $object_CRUD->deleteRecord('book_category', 'category', $category);
+    $object_BookDatabaseHandler->delete_book_category($category);
     header('location: ALL_BOOKS.PHP');
 }
 
@@ -995,25 +1006,7 @@ if (isset($_POST['update_user'])) {
     $object_validation->is_name_valid();
     $object_validation->is_dob_valid();
     $object_validation->is_gender_valid();
-    $object_validation->is_email_valid();
-    $all_emails = $object_CRUD->getAllRecords('user_registration', 'email');
-    var_dump(in_array($object_validation->email, $all_emails));
-    if (in_array($object_validation->email, $all_emails)) {
-        $existingEmail = $object_CRUD->getRecord('user_registration', 'email', 'id', $_SESSION['login']);
-        if ($object_validation->email !== $existingEmail[0]['email']) {
-            $object_validation->error_email = "This email is already associated with an account.!";
-            return;
-        }
-    }
     $object_validation->is_phone_valid();
-    $all_phones = $object_CRUD->getAllRecords('user_registration', 'phone');
-    if (in_array($object_validation->phone, $all_phones)) {
-        $existingPhone = $object_CRUD->getRecord('user_registration', 'phone', 'id', $_SESSION['login']);
-        if ($object_validation->phone !== $existingPhone[0]['phone']) {
-            $object_validation->error_phone = "This Phone is already associated with an account.!";
-            return;
-        }
-    }
     $object_validation->is_address_valid();
 
     if (!empty($_POST['password'])) {
@@ -1029,7 +1022,7 @@ if (isset($_POST['update_user'])) {
         $object_validation->error_password,
     ];
     if ($object_validation->is_array_empty($errorVariables)) {
-        $object_CRUD->getPassword('user_registration', $_SESSION['login']);
+        $object_CRUD->getPassword('user_registration',$_SESSION['login']);
         $verify = password_verify($_POST['old_password'], $object_CRUD->hashedPassword);
         if ($verify) {
             if ($object_validation->is_array_empty($errorVariables)) {
@@ -1038,7 +1031,7 @@ if (isset($_POST['update_user'])) {
 
                     if (!strlen($object_validation->error_profile_picture) && move_uploaded_file($object_validation->profile_picture["tmp_name"], $object_validation->profile_picture_path)) {
 
-                        $object_CRUD->updateRecord('user_registration', ['email' => "$_POST[email]", 'phone' => "$_POST[phone]", 'name' => "$_POST[name]", 'gender' => " $_POST[gender]", 'dob' => "$_POST[dob]", 'address' => "$_POST[address]", 'modified_date' => $object_CRUD->current_date()], 'id', "$_SESSION[login]");
+                        $object_CRUD->updateRecord('user_registration', ['email' => "$_POST[email]", 'phone' => "$_POST[phone]", 'name' => "$_POST[name]", 'gender' => " $_POST[gender]", 'dob' => "$_POST[dob]", 'address' => "$_POST[address]", 'modified_date' => $object_database->current_date()], 'id', "$_SESSION[login]");
 
 
                         if (isset($object_validation->password)) {
@@ -1057,7 +1050,7 @@ if (isset($_POST['update_user'])) {
                     }
 
                 } else {
-                    $object_CRUD->updateRecord('user_registration', ['email' => "$_POST[email]", 'phone' => "$_POST[phone]", 'name' => "$_POST[name]", 'gender' => " $_POST[gender]", 'dob' => "$_POST[dob]", 'address' => "$_POST[address]", 'modified_date' => $object_CRUD->current_date()], 'id', "$_SESSION[login]");
+                    $object_CRUD->updateRecord('user_registration', ['email' => "$_POST[email]", 'phone' => "$_POST[phone]", 'name' => "$_POST[name]", 'gender' => " $_POST[gender]", 'dob' => "$_POST[dob]", 'address' => "$_POST[address]", 'modified_date' => $object_database->current_date()], 'id', "$_SESSION[login]");
 
 
                     if (isset($object_validation->password)) {
@@ -1083,23 +1076,7 @@ if (isset($_POST['update_super_admin'])) {
     $object_validation->is_dob_valid();
     $object_validation->is_gender_valid();
     $object_validation->is_email_valid();
-    $all_emails = $object_CRUD->getAllRecords('super_admin', 'email');
-    if (in_array($object_validation->email, $all_emails)) {
-        $existingEmail = $object_CRUD->getRecord('super_admin', 'email', 'id', $_GET['id']);
-        if ($object_validation->email !== $existingEmail[0]['email']) {
-            $object_validation->error_email = "This email is already associated with an account.!";
-            return;
-        }
-    }
     $object_validation->is_phone_valid();
-    $all_phones = $object_CRUD->getAllRecords('supr_admin', 'phone');
-    if (in_array($object_validation->phone, $all_phones)) {
-        $existingPhone = $object_CRUD->getRecord('super_admin', 'phone', 'id', $_GET['id']);
-        if ($object_validation->phone !== $existingPhone[0]['phone']) {
-            $object_validation->error_phone = "This Phone is already associated with an account.!";
-            return;
-        }
-    }
     $object_validation->is_address_valid();
 
     if (!empty($_POST['password'])) {
@@ -1117,15 +1094,15 @@ if (isset($_POST['update_super_admin'])) {
     ];
 
     if ($object_validation->is_array_empty($errorVariables)) {
-        $password = $object_CRUD->getRecord('super_admin', 'password', 'id', $_SESSION['super_admin_login']);
-        $verify = ($_POST['old_password'] == $password[0]['password']);
+        $password=$object_CRUD->getRecord('super_admin','password','id',$_SESSION['super_admin_login']);
+        $verify = ($_POST['old_password'] == $password['password']);
         if ($verify && !strlen($object_validation->error_profile_picture)) {
             if ($_FILES['profile_picture']['name'] != "") {
                 $object_validation->is_admin_profile_picture_valid();
 
                 if (move_uploaded_file($object_validation->profile_picture["tmp_name"], $object_validation->profile_picture_path)) {
 
-                    $object_CRUD->updateRecord('super_admin', ['email' => "$_POST[email]", 'phone' => "$_POST[phone]", 'name' => "$_POST[name]", 'gender' => " $_POST[gender]", 'dob' => "$_POST[dob]", 'address' => "$_POST[address]", 'admin_modified' => $object_CRUD->current_date()], 'id', "$_SESSION[super_admin_login]");
+                    $object_CRUD->updateRecord('super_admin', ['email' => "$_POST[email]", 'phone' => "$_POST[phone]", 'name' => "$_POST[name]", 'gender' => " $_POST[gender]", 'dob' => "$_POST[dob]", 'address' => "$_POST[address]", 'admin_modified' => $object_database->current_date()], 'id', "$_SESSION[super_admin_login]");
 
 
                     if (isset($object_validation->password)) {
@@ -1144,7 +1121,7 @@ if (isset($_POST['update_super_admin'])) {
 
             } else {
 
-                $object_CRUD->updateRecord('super_admin', ['email' => "$_POST[email]", 'phone' => "$_POST[phone]", 'name' => "$_POST[name]", 'gender' => " $_POST[gender]", 'dob' => "$_POST[dob]", 'address' => "$_POST[address]", 'admin_modified' => $object_CRUD->current_date()], 'id', "$_SESSION[super_admin_login]");
+                $object_CRUD->updateRecord('super_admin', ['email' => "$_POST[email]", 'phone' => "$_POST[phone]", 'name' => "$_POST[name]", 'gender' => " $_POST[gender]", 'dob' => "$_POST[dob]", 'address' => "$_POST[address]", 'admin_modified' => $object_database->current_date()], 'id', "$_SESSION[super_admin_login]");
 
 
                 if (isset($object_validation->password)) {
@@ -1169,23 +1146,17 @@ if (isset($_POST['update_admin'])) {
     $object_validation->is_dob_valid();
     $object_validation->is_gender_valid();
     $object_validation->is_email_valid();
-    $all_emails = $object_CRUD->getAllRecords('admin', 'email');
-    if (in_array($object_validation->email, $all_emails)) {
-        $existingEmail = $object_CRUD->getRecord('admin', 'email', 'id', $_GET['id']);
-        if ($object_validation->email !== $existingEmail[0]['email']) {
-            $object_validation->error_email = "This email is already associated with an account.!";
+    $all_emails = $object_CRUD->getAllRecords('admin','email');
+        if (in_array($object_validation->email, $all_emails)) {
+            $existingEmail=$object_CRUD->getRecord('admin','email','id',$_GET['id']);
+            if($object_validation->email !== $existingEmail[0]['email']) {
+                $object_validation->error_email = "This email is already associated with an account.!";
             return;
+            }
+
+            
         }
-    }
     $object_validation->is_phone_valid();
-    $all_phones = $object_CRUD->getAllRecords('admin', 'phone');
-    if (in_array($object_validation->phone, $all_phones)) {
-        $existingPhone = $object_CRUD->getRecord('admin', 'phone', 'id', $_GET['id']);
-        if ($object_validation->phone !== $existingPhone[0]['phone']) {
-            $object_validation->error_phone = "This Phone is already associated with an account.!";
-            return;
-        }
-    }
     $object_validation->is_address_valid();
 
     if (!empty($_POST['password'])) {
@@ -1203,7 +1174,7 @@ if (isset($_POST['update_admin'])) {
     ];
 
     if ($object_validation->is_array_empty($errorVariables)) {
-        $object_CRUD->getPassword('admin', $_SESSION['admin_login']);
+        $object_CRUD->getPassword('admin',$_SESSION['admin_login']);
         $verify = password_verify($_POST['old_password'], $object_CRUD->hashedPassword);
         if ($verify && !strlen($object_validation->error_profile_picture)) {
             if ($_FILES['profile_picture']['name'] != "") {
@@ -1211,7 +1182,7 @@ if (isset($_POST['update_admin'])) {
 
                 if (move_uploaded_file($object_validation->profile_picture["tmp_name"], $object_validation->profile_picture_path)) {
 
-                    $object_CRUD->updateRecord('admin', ['email' => "$_POST[email]", 'phone' => "$_POST[phone]", 'name' => "$_POST[name]", 'gender' => " $_POST[gender]", 'dob' => "$_POST[dob]", 'address' => "$_POST[address]", 'admin_modified' => $object_CRUD->current_date()], 'id', "$_SESSION[admin_login]");
+                    $object_CRUD->updateRecord('admin', ['email' => "$_POST[email]", 'phone' => "$_POST[phone]", 'name' => "$_POST[name]", 'gender' => " $_POST[gender]", 'dob' => "$_POST[dob]", 'address' => "$_POST[address]", 'admin_modified' => $object_database->current_date()], 'id', "$_SESSION[admin_login]");
 
 
                     if (isset($object_validation->password)) {
@@ -1231,7 +1202,7 @@ if (isset($_POST['update_admin'])) {
 
             } else {
 
-                $object_CRUD->updateRecord('admin', ['email' => "$_POST[email]", 'phone' => "$_POST[phone]", 'name' => "$_POST[name]", 'gender' => " $_POST[gender]", 'dob' => "$_POST[dob]", 'address' => "$_POST[address]", 'admin_modified' => $object_CRUD->current_date()], 'id', "$_SESSION[admin_login]");
+                $object_CRUD->updateRecord('admin', ['email' => "$_POST[email]", 'phone' => "$_POST[phone]", 'name' => "$_POST[name]", 'gender' => " $_POST[gender]", 'dob' => "$_POST[dob]", 'address' => "$_POST[address]", 'admin_modified' => $object_database->current_date()], 'id', "$_SESSION[admin_login]");
 
 
                 if (isset($object_validation->password)) {
@@ -1250,40 +1221,5 @@ if (isset($_POST['update_admin'])) {
         }
 
     }
-}
-
-if(isset($_POST['search'])){
-if(isset($_POST['search_category'])){
-    switch ($_POST['search_category']) {
-        case 'all':
-            if($object_CRUD->search('books','sku','author',$_POST['search_data'])){
-                $sku=$object_CRUD->search('books','sku','author',$_POST['search_data']);
-            } else{
-                $sku=$object_CRUD->search('books','sku','title',$_POST['search_data']);
-            }  
-            break;
-        case 'author':
-            $sku=$object_CRUD->search('books','sku','author',$_POST['search_data']);
-            break;
-        case 'title':
-            $sku=$object_CRUD->search('books','sku','title',$_POST['search_data']);
-            break;
-        case 'category':
-            $sku=$object_CRUD->search('books','sku','category',$_POST['search_data']);
-            break;
-        case 'SKU':
-            if($object_CRUD->getRecord('books','sku','sku',$_POST['search_data'])){
-                $sku=$object_CRUD->getRecord('books','sku','sku',$_POST['search_data']);
-            } else{
-                $object_validation->search= "no record found";  
-            }
-            
-            break;
-        default:
-            
-        break;
-    }
-} 
- 
 }
 ?>

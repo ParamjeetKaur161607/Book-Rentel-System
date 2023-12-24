@@ -1,19 +1,29 @@
 <?php
 require("ADMIN_PANEL.PHP");
 $id=$_GET['user_id'];
-$object_database->users_status($id);
-$active="ACTIVE";
-$inactive="INACTIVE";
-if(isset($_POST['delete_user'])){
-    $object_database->delete_user($id,$object_database->row['user_email']);
-    header("location:USER.PHP");}
+$userStatus=$object_CRUD->getRecord('user_registration','status','id',$id);
 
-if(isset($_POST['user'])){
-    if($object_database->row['user_status']!="INACTIVE"){
-        $object_database->update_user_status("INACTIVE",$object_database->row['user_email']);
+if (isset($_POST['user_delete'])) {
+    $pending_returns=$object_CRUD->getRecord('return_order','sku','user_id',$_GET['user_id']);
+    if(empty($pending_returns)){
+        $object_CRUD->deleteRecord('validate_return_date', 'user_id', $_GET['user_id']);
+        $object_CRUD->deleteRecord('cart', 'id', $_GET['user_id']);
+        $object_CRUD->deleteRecord('user_registration', 'id', $_GET['user_id']);
+        unset($_SESSION['login']);
+        header('location: USER.PHP');
+    } else {
+        header('location: USER_DELETE_ALERT.PHP');
+    }
+}
+
+if(isset($_POST['status'])){
+    if($userStatus[0]['status']!="INACTIVE"){
+        $object_CRUD->updateRecord('user_registration', ['status'=>'INACTIVE'],'id', $id);
+        // $object_database->update_user_status("INACTIVE",$object_database->row['user_email']);
         header("location:USER.PHP");
     }else{
-        $object_database->update_user_status("ACTIVE",$object_database->row['user_email']);
+        $object_CRUD->updateRecord('user_registration', ['status'=>'ACTIVE'],'id', $id);
+
         header("location:USER.PHP");
     }
 }
@@ -45,7 +55,7 @@ if(isset($_POST['user'])){
             <ul class="list-disc">
                 <li>Click DELETE, if you want to delete parmanelty to this user.</li>
                 <li>Click <?php
-                        if($object_database->row['user_status']!="INACTIVE"){
+                        if($userStatus[0]['status']!="INACTIVE"){
                             echo "INACTIVE";
                         }else{
                             echo "ACTIVE";
@@ -54,8 +64,8 @@ if(isset($_POST['user'])){
             </ul>
             <div class="flex gap-5 justify-end">
                 <form action="" method="post">
-                    <button name="user" class="bg-yellow-600 rounded-md py-2 px-5 text-white"><?php
-                        if($object_database->row['user_status']!="INACTIVE"){
+                    <button name="status" class="bg-yellow-600 rounded-md py-2 px-5 text-white"><?php
+                        if($userStatus[0]['status']!="INACTIVE"){
                             echo "INACTIVE";
                         }else{
                             echo "ACTIVE";
@@ -63,7 +73,7 @@ if(isset($_POST['user'])){
                     ?></button>
                 </form>
                 <form action="" method="post">
-                    <button name="delete_user" class="bg-red-800 rounded-md py-2 px-5 text-white">DELETE</button>
+                    <button name="user_delete" class="bg-red-800 rounded-md py-2 px-5 text-white">DELETE</button>
                 </form>
             </div>
         </div>
