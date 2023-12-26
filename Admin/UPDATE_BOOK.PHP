@@ -11,6 +11,7 @@ if (isset($_POST['update_book'])) {
     $object_BookValidationHandler->is_book_discription_valid();
     $object_BookValidationHandler->is_book_quantity_valid();
     $object_BookValidationHandler->is_book_price_valid();
+    $object_BookValidationHandler->is_book_fine_valid();
     $errorVariables = [
         $object_BookValidationHandler->error_book_title,
         $object_BookValidationHandler->error_book_author,
@@ -19,6 +20,7 @@ if (isset($_POST['update_book'])) {
         $object_BookValidationHandler->error_book_quantity,
         $object_BookValidationHandler->error_book_price,
         $object_BookValidationHandler->error_book_image,
+        $object_BookValidationHandler->error_fine,
     ];
     if ($object_BookValidationHandler->is_array_empty($errorVariables)) {
         if ($_FILES["book_file"]["name"] != "") {
@@ -27,7 +29,8 @@ if (isset($_POST['update_book'])) {
 
                 $object_CRUD->updateRecord('books',['title' => "$_POST[book_title]",'author' => "$_POST[book_author]",'category' =>" $_POST[book_category]",'discription' => "$_POST[book_discription]",'quantity' => "$_POST[book_quantity]",'book_modified' => $object_CRUD->current_date()],'sku',"$id");
                        
-                       
+                $object_CRUD->updateRecord('books_price',['per_day_price'=>"$_POST[per_day_price]",'fine'=>"$_POST[per_day_fine]"],'sku',"$id");
+                
                 $object_CRUD->updateRecord('books',['cover_image'=>"$object_BookValidationHandler->book_image_name"],'sku',"$id");
                 // header('location: ALL_BOOKS.PHP');
                 echo "<script> window.location.href='ALL_BOOKS.PHP' </script>"; 
@@ -37,6 +40,7 @@ if (isset($_POST['update_book'])) {
         } else {
 
             $object_CRUD->updateRecord('books',['title' => "$_POST[book_title]",'author' => "$_POST[book_author]",'category' =>" $_POST[book_category]",'discription' => "$_POST[book_discription]",'quantity' => "$_POST[book_quantity]",'book_modified' => $object_CRUD->current_date()],'sku',"$id");
+            $object_CRUD->updateRecord('books_price',['per_day_price'=>"$_POST[per_day_price]",'fine'=>"$_POST[per_day_fine]"],'sku',"$id");
             // header('location: ALL_BOOKS.PHP');
             echo "<script> window.location.href='ALL_BOOKS.PHP' </script>";
         }
@@ -107,12 +111,26 @@ if (isset($_POST['update_book'])) {
                         class="p-2 h-10 bg-gray-300 border-b border-gray-400 outline-none"  value="<?php echo $object_CRUD->row["quantity"]; ?>">
                     <span class="text-red-500 text-sm"><?php echo $object_BookValidationHandler->error_book_quantity; ?></span>                    
                 </div>                
-                <div class="flex flex-col">
-                    <label for="book_price">Book Price</label>
-                    <input type="text" name="book_price" id="book_price"
-                        class="p-2 h-10 bg-gray-300 border-b border-gray-400 outline-none"  value="<?php echo $object_CRUD->row["mrp"]; ?>">
-                        <span class="text-red-500 text-sm"><?php echo $object_BookValidationHandler->error_book_price; ?></span>                   
-                </div>                
+                <div class="flex gap-5">
+                    <div class="flex flex-col">
+                        <label for="per_day_price">Per Day Price</label>
+                        <input type="text" name="per_day_price" id="book_price"
+                            class="h-10 bg-gray-300 border-b outline-none border-gray-400 w-fit"
+                            value="<?php echo $object_CRUD->row["per_day_price"] ?>">
+                        <span class="text-red-500 text-sm">
+                            <?php echo $object_BookValidationHandler->error_book_price; ?>
+                        </span>
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="per_day_fine">Per DayFine</label>
+                        <input type="text" name="per_day_fine" id="per_day_fine"
+                            class="h-10 bg-gray-300 border-b outline-none border-gray-400 w-fit"
+                            value="<?php echo $object_CRUD->row["fine"] ?>">
+                        <span class="text-red-500 text-sm">
+                            <?php echo $object_BookValidationHandler->error_fine; ?>
+                        </span>
+                    </div>
+                </div>               
                 <div class="flex flex-col col-span-2">
                     <div class="flex justify-between">
                         <input type="file" name="book_file" id="book_file" aria-labelledby="book_cover"

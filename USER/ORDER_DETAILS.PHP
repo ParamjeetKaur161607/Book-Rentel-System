@@ -48,20 +48,19 @@ if (isset($_POST['place_order'])) {
         $order_id=$object_CRUD->unique_id();
         foreach ($object_OrderValidationHandler->all_sku as $key => $value) {
             $return=$object_CRUD->getRecordWithConditions('validate_return_date','return_date','user_id',"$_SESSION[login]",'sku', "$value[sku]");
-            var_dump($return);
+            $getBookFine=$object_CRUD->getRecord('books_price','fine','sku',"$value[sku]");
             if(!empty($return)){
                 $return_date= $return[0]["return_date"];
                 if(!empty($return_date)){
                     $book_return_Date=$return_date;
                 }
             }           
-
             if(date('Y-m-d') > $return_date){
                 $daysDifference = $object_OrderValidationHandler->getTotalDays($return_date[0]['return_date'] , date('Y-m-d'));
-                $fine= $daysDifference*2;
+                $fine= $daysDifference*$getBookFine[0]['fine'];
             }else{
                 $fine= 0;
-            }                       
+            }            
 
             $rent=$object_CRUD->getRecord('books_price','per_day_price','sku',"$value[sku]");
             $book_title=$object_CRUD->getRecord('books','title','sku',"$value[sku]");

@@ -9,6 +9,7 @@ if (isset($_POST['publish_book'])) {
     $object_BookValidationHandler->is_book_discription_valid();
     $object_BookValidationHandler->is_book_quantity_valid();
     $object_BookValidationHandler->is_book_price_valid();
+    $object_BookValidationHandler->is_book_fine_valid();
     $object_BookValidationHandler->is_book_image_valid();
 
     $errorVariables = [
@@ -19,6 +20,7 @@ if (isset($_POST['publish_book'])) {
         $object_BookValidationHandler->error_book_discription,
         $object_BookValidationHandler->error_book_quantity,
         $object_BookValidationHandler->error_book_price,
+        $object_BookValidationHandler->error_fine,
         $object_BookValidationHandler->error_book_image,
     ];
     if ($object_BookValidationHandler->is_array_empty($errorVariables)) {
@@ -34,17 +36,20 @@ if (isset($_POST['publish_book'])) {
             "book_uploaded" => $object_CRUD->current_date(),
             "book_modified" => $object_CRUD->current_date()
         );
+        var_dump($object_BookValidationHandler->fine);
 
         $data_into_bookPrice = array(
             "sku" => "$object_BookValidationHandler->book_sku",
             "mrp" => "$object_BookValidationHandler->book_price",
-            "per_day_price" => round($object_BookValidationHandler->book_price * 5 / 100, 0)
+            "per_day_price" => round($object_BookValidationHandler->book_price, 2),
+            "fine" => round($object_BookValidationHandler->fine,2)
         );
 
         if (move_uploaded_file($_FILES['book_file']["tmp_name"], $object_BookValidationHandler->book_image_path)) {
             $object_CRUD->insertRecord("books", $data_into_book);
             $object_CRUD->insertRecord("books_price", $data_into_bookPrice);
-            header('Location: ALL_BOOKS.PHP');
+            // header('Location: ALL_BOOKS.PHP');
+            echo "<script> window.location.href='ALL_BOOKS.PHP' </script>"; 
         } else {
             $object_BookValidationHandler->error_book_image = "file location error";
         }
@@ -140,15 +145,27 @@ if (isset($_POST['publish_book'])) {
                     </span>
 
                 </div>
-                <div class="flex flex-col">
-                    <label for="book_price">Book Price</label>
-                    <input type="text" name="book_price" id="book_price"
-                        class="p-2 h-10 bg-gray-300 border-b outline-none border-gray-400"
-                        value="<?php echo $object_BookValidationHandler->book_price ?>">
-                    <span class="text-red-500 text-sm">
-                        <?php echo $object_BookValidationHandler->error_book_price; ?>
-                    </span>
+                <div class="flex gap-5">
+                    <div class="flex flex-col">
+                        <label for="per_day_price">Per Day Price</label>
+                        <input type="text" name="per_day_price" id="book_price"
+                            class="h-10 bg-gray-300 border-b outline-none border-gray-400 w-fit"
+                            value="<?php echo $object_BookValidationHandler->book_price ?>">
+                        <span class="text-red-500 text-sm">
+                            <?php echo $object_BookValidationHandler->error_book_price; ?>
+                        </span>
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="per_day_fine">Per Day Fine</label>
+                        <input type="text" name="per_day_fine" id="per_day_fine"
+                            class="h-10 bg-gray-300 border-b outline-none border-gray-400 w-fit"
+                            value="<?php echo $object_BookValidationHandler->fine ?>">
+                        <span class="text-red-500 text-sm">
+                            <?php echo $object_BookValidationHandler->error_fine; ?>
+                        </span>
+                    </div>
                 </div>
+                
                 <div class="flex flex-col col-span-2">
                     <input type="file" name="book_file" id="book_file" aria-labelledby="book_cover"
                         class="rounded-lg h-10 outline-none">

@@ -82,9 +82,9 @@ require("ADMIN_PANEL.PHP");
                                     </dl>
                                     <dl class="space-y-2 px-5">
                                         <div class="flex gap-2">
-                                            <dt class="font-bold">MRP:</dt>
+                                            <dt class="font-bold">Fine:</dt>
                                             <dd>Rs.
-                                                <?= $all_books[$key]['mrp']; ?>
+                                                <?= $all_books[$key]['fine']; ?>
                                             </dd>
                                         </div>
                                         <div class="flex gap-2">

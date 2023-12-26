@@ -25,6 +25,7 @@ if(isset($_SESSION['login'])){
 
         <ol class="list-decimal grid grid-cols-3 gap-10">
             <?php 
+            
             if(isset($all_orders)):
             foreach ($all_orders as $key => $value):  
                 // $object_CRUD->getJoinOrders('orders','books','books_price','sku','sku',$value['sku']);
@@ -54,7 +55,8 @@ if(isset($_SESSION['login'])){
                                         <?php foreach($emails as $key => $values):?>
                                     <a href="mailto:<?php $emails[0]['email'] ?>"
                                         class="underline"><?= $values['email']; ?></a>  
-                                        <?php  endforeach;?>                                      
+                                        <?php  endforeach;?> 
+                                    <p>Payment: <?= $object_CRUD->record['payment']?></p>                                      
                                 </div>
                             </div>
                             <div class="flex justify-between w-full">

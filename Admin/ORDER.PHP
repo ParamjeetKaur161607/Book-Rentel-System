@@ -69,9 +69,13 @@ $all_orders=$object_CRUD->getRecords('orders');
                                 </ul>
                                 <ul>
                                     <li><b>Address: </b><?= $value['customer_address']; ?></li>
+                                    
                                 </ul>
+                                
                             </div>
+                            <p class="text-red-700"><b>Note By user: </b><?= $value['Note']; ?></p>
                         </div>
+                        
 
 
                     </div>

@@ -4,9 +4,9 @@ include_once("DATABASE.PHP");
 // trait for validation checking
 trait validation_trait
 {
-    public $name, $email, $address, $phone, $gender, $dob, $security_question, $password, $card_number, $name_on_card, $cvv, $card_expiry_month, $card_expiry_year, $profile_picture, $profile_picture_name, $profile_picture_path, $date, $category, $duration, $payment, $start_date, $max_duration, $return_date, $sale_price, $daysDifference, $book_image_path, $book_image_name, $insert_data, $old_password, $alert, $search;
+    public $name, $email, $address, $phone, $gender, $dob, $security_question, $password, $card_number, $name_on_card, $cvv, $card_expiry_month, $card_expiry_year, $profile_picture, $profile_picture_name, $profile_picture_path, $date, $category, $duration, $payment, $start_date, $max_duration, $return_date, $sale_price, $daysDifference, $book_image_path, $book_image_name, $insert_data, $old_password, $alert, $search,$fine;
 
-    public $error_name, $error_email, $error_address, $error_phone, $error_gender, $error_dob, $error_security_question, $error_password, $error_card_number, $error_name_on_card, $error_cvv, $error_card_expiry_month, $error_card_expiry_year, $error_profile_picture, $error_category, $error_duration, $error_payment;
+    public $error_name, $error_email, $error_address, $error_phone, $error_gender, $error_dob, $error_security_question, $error_password, $error_card_number, $error_name_on_card, $error_cvv, $error_card_expiry_month, $error_card_expiry_year, $error_profile_picture, $error_category, $error_duration, $error_payment,$error_fine;
 
     public $book_sku, $book_title, $book_author, $book_category, $book_discription, $book_quantity, $book_price, $book_sale_price, $book_image;
 
@@ -324,16 +324,30 @@ class BookValidationHandler extends database
      */
     public function is_book_price_valid()
     {
-        $this->book_price = $_POST['book_price'];
+        $this->book_price = $_POST['per_day_price'];
         if (empty(trim($this->book_price))) {
             $this->error_book_price = "Please enter price of the book!";
             return;
         }
 
-        if (!ctype_digit($this->book_price)) {
+        if (!is_int($this->book_price) && !is_numeric($this->book_price)) {
             $this->error_book_price = "Please enter the valid book price!";
             return;
-        }
+        } 
+    }
+
+    public function is_book_fine_valid()
+    {
+        $this->fine = $_POST['per_day_fine'];
+        if (empty(trim($this->fine))) {
+            $this->error_fine = "Please enter per day fine for this book!";
+            return;
+        }        
+
+        if (!is_int($this->fine) && !is_numeric($this->fine)) {
+            $this->error_fine = "Please enter the valid book Fine!";
+            return;
+        } 
     }
 
     /**
@@ -1214,7 +1228,6 @@ if (isset($_POST['update_admin'])) {
 
     }
 }
-
 if (isset($_POST['search'])) {
     if (isset($_POST['search_category'])) {
         switch ($_POST['search_category']) {

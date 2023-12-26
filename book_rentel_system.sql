@@ -16,9 +16,12 @@
 -- create database SecondStoryBookStore;    
 use SecondStoryBookStore;
 -- delete from orders where customer_name='jyoti'
+-- alter table books_price modify COLUMN per_day_price decimal not null;
+-- desc books_price
 -- desc book_category;
+delete from books where author='param';
 -- select*from books;
-SELECT sku FROM books where TRIM(category)='English';
+-- SELECT sku FROM books where TRIM(category)='English';
 -- update books set category=1 where sku='Novel-1'; 
 -- select * from books where author='param';
 -- select* from book_category
@@ -167,10 +170,10 @@ SELECT sku FROM books where TRIM(category)='English';
 --     PRIMARY KEY(category)
 -- );
 -- drop table book_category;
-ALTER TABLE books 
-ADD CONSTRAINT category
-FOREIGN KEY(category) 
-REFERENCES book_category(category);
+-- ALTER TABLE books 
+-- ADD CONSTRAINT category
+-- FOREIGN KEY(category) 
+-- REFERENCES book_category(category);
 -- desc books;
 -- drop table book;
 -- create table books(

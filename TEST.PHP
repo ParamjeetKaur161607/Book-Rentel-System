@@ -1,9 +1,8 @@
 <?php
-class abc{
-	use PHPMailer\PHPMailer\PHPMailer;
-	use PHPMailer\PHPMailer\SMTP;
-	use PHPMailer\PHPMailer\Exception;
-	if(isset($_POST['submit'])){
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+if(isset($_POST['submit'])){
 	//Import PHPMailer classes into the global namespace
 	//These must be at the top of your script, not inside a function
 	
@@ -44,7 +43,6 @@ class abc{
 	catch (Exception $e) {
 	    echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
 	}
-}
 }
 ?>
 <!DOCTYPE html>

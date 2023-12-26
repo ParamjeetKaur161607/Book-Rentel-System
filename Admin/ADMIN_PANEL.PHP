@@ -28,7 +28,7 @@ if (isset($_SESSION['super_admin_login'])) {
 
     <body>
         <aside
-            class="bg-gray-900 border-r h-screen w-[20rem] fixed leading-10 flex flex-col gap-5 items-center justify-between">
+            class="bg-gray- border-r h-screen w-[20rem] fixed leading-10 flex flex-col gap-5 items-center justify-between">
             <div class="w-full flex flex-col items-center gap-20 ">
                 <button class="bg-gray-700 p-6 w-full shadow-md">
                     <div class="bg-gray-700 px-5 py-2">
