@@ -1,10 +1,14 @@
 <?php
 include("USER_MENU.PHP");
 
-$return_date=$object_CRUD->getRecord('validate_return_date','return_date','user_id',"$_SESSION[login]");
-// var_dump($return_date);
+if(isset($_SESSION['login'])){
+    $return_date=$object_CRUD->getRecord('validate_return_date','return_date','user_id',"$_SESSION[login]");
+    $object_OrderValidationHandler->all_sku=$object_CRUD->getRecord('validate_return_date','sku','user_id',"$_SESSION[login]");
+} else{
+    header("Location: LOGIN.PHP");
+    exit();
+}
 
-$object_OrderValidationHandler->all_sku=$object_CRUD->getRecord('cart','sku','id',"$_SESSION[login]");
 foreach ($object_OrderValidationHandler->all_sku as $key => $value){
     $object_CRUD->getJoinbook('books','books_price','sku',"$value[sku]");
     if(isset($return_date[0]['return_date'])){
@@ -15,18 +19,6 @@ foreach ($object_OrderValidationHandler->all_sku as $key => $value){
     }
 }
 
-if(isset($_POST['duration_date'])){
-    $object_OrderValidationHandler->is_duration_valid();
-    if(!strlen($object_OrderValidationHandler->error_duration)){
-        $allUserIds=$object_CRUD->getAllRecords('validate_return_date','user_id');
-
-        if(in_array("$_SESSION[login]",$allUserIds)){
-            $object_CRUD->updateRecord('validate_return_date',['return_date'=>"$object_OrderValidationHandler->duration"],'user_id',"$_SESSION[login]");
-        }else{
-        $object_CRUD->insertRecord('validate_return_date',["user_id" => "$_SESSION[login]",'return_date'=>$object_OrderValidationHandler->duration]);   
-        }
-    }                
-}
 if (isset($_POST['place_order'])) {
     $object_validation->is_email_valid();
     $object_validation->is_name_valid();
@@ -37,20 +29,12 @@ if (isset($_POST['place_order'])) {
     $object_OrderValidationHandler->is_cvv_valid();
     $object_OrderValidationHandler->is_expiry_date_valid();
     $object_OrderValidationHandler->is_payment_valid();
-    if(isset($return_date[0]['return_date'])){
-        if($_POST['duration'] != $return_date[0]['return_date']){
-            $object_OrderValidationHandler->error_duration="Please Validate Date First!";
-        }
-    } else {
-        $object_OrderValidationHandler->error_duration="Please Validate Date First!";
-    }
-    
+        
     $errorVariables = [
         $object_validation->error_email,
         $object_validation->error_phone,
         $object_validation->error_name,
         $object_validation->error_address,
-        $object_OrderValidationHandler->error_duration,
         $object_OrderValidationHandler->error_card_number,
         $object_OrderValidationHandler->error_name_on_card,
         $object_OrderValidationHandler->error_cvv,
@@ -60,11 +44,19 @@ if (isset($_POST['place_order'])) {
     ];    
 
     if ($object_OrderValidationHandler->is_array_empty($errorVariables)) {
-        $object_OrderValidationHandler->all_sku=$object_CRUD->getRecord('cart','sku','id',"$_SESSION[login]");
+        $object_OrderValidationHandler->all_sku=$object_CRUD->getRecord('validate_return_date','sku','user_id',"$_SESSION[login]");
         $order_id=$object_CRUD->unique_id();
         foreach ($object_OrderValidationHandler->all_sku as $key => $value) {
+            $return=$object_CRUD->getRecordWithConditions('validate_return_date','return_date','user_id',"$_SESSION[login]",'sku', "$value[sku]");
+            var_dump($return);
+            if(!empty($return)){
+                $return_date= $return[0]["return_date"];
+                if(!empty($return_date)){
+                    $book_return_Date=$return_date;
+                }
+            }           
 
-            if(date('Y-m-d') > $return_date[0]['return_date']){
+            if(date('Y-m-d') > $return_date){
                 $daysDifference = $object_OrderValidationHandler->getTotalDays($return_date[0]['return_date'] , date('Y-m-d'));
                 $fine= $daysDifference*2;
             }else{
@@ -72,6 +64,9 @@ if (isset($_POST['place_order'])) {
             }                       
 
             $rent=$object_CRUD->getRecord('books_price','per_day_price','sku',"$value[sku]");
+            $book_title=$object_CRUD->getRecord('books','title','sku',"$value[sku]");
+            $book_author=$object_CRUD->getRecord('books','author','sku',"$value[sku]");
+            $book_cover_image=$object_CRUD->getRecord('books','cover_image','sku',"$value[sku]");
 
             $data_into_order = array(
                 "order_id" => $order_id,
@@ -81,29 +76,33 @@ if (isset($_POST['place_order'])) {
                 "sku" => "$value[sku]",
                 "customer_address" => "$_POST[address]",
                 "order_date" => date('Y-m-d'),
-                "return_date" => "$_POST[duration]",
+                "return_date" => "$book_return_Date",
                 "payment" => $rent[0]["per_day_price"],
                 "subtotal" => $subtotal,
                 "note" => "$_POST[note]",
                 "Fine" => $fine,
+                "book_title"=> $book_title[0]['title'],
+                "book_author"=>$book_author[0]['author'],
+                "book_cover_image"=> $book_cover_image[0]["cover_image"],
             );
             $data_into_return_orders = array(
                 "user_id" => "$_SESSION[login]",
                 "sku" => "$value[sku]",
                 "order_date" => date('Y-m-d'),
-                "return_date" => "$_POST[duration]",
+                "return_date" => "$book_return_Date",
                 "Fine" => $fine,
-            );
-
-                        
+                "order_id" => $order_id,
+            );         
             
             $object_CRUD->insertRecord('orders',$data_into_order);
             $object_CRUD->insertRecord('return_order',$data_into_return_orders);
             $object_CRUD->UpdateQuantity('-',$value['sku']);
             $object_CRUD->deleteRecord('cart','id',"$_SESSION[login]");
             $object_CRUD->deleteRecord('validate_return_date','user_id',"$_SESSION[login]");            
-            header('location: PAYMENT.PHP');
+            
         }
+        header('location: PAYMENT.PHP');
+        exit;
     }
 
 }
@@ -213,16 +212,6 @@ if (isset($_POST['place_order'])) {
                         </span>
                     </div>
 
-                    <div class="">
-                        <label for="duration">Duration<span class="text-red-500">*</span></label>
-                        <input type="date" name="duration" id="duration" value="<?php echo $return_date[0]['return_date']?>">
-                        <button name="duration_date" class="bg-red-300 px-2 mt-4 rounded-sm">Validate Date</button>
-                        <span class="text-red-500 text-sm mt-5">
-                            <?php echo $object_OrderValidationHandler->error_duration; ?>
-                        </span>
-                        
-                    </div>
-
                     <div class="col-span-3 space-y-3 flex flex-col">
                         <label for="note">Note for Seller</label>
                         <textarea class="border border-gray-500 outline-none text-gray-500 p-3" name="note" id="note" cols="108"
@@ -233,31 +222,39 @@ if (isset($_POST['place_order'])) {
                         <h2 class="text-center font-bold text-2xl border-b pb-5 border-gray-300">Order Summary</h2>                        
                         <ul class="">
                             <?php
-                            $object_OrderValidationHandler->all_sku=$object_CRUD->getRecord('cart','sku','id',"$_SESSION[login]");
-                            foreach ($object_OrderValidationHandler->all_sku as $key => $value):?>
+                            $object_OrderValidationHandler->all_sku=$object_CRUD->getRecord('validate_return_date','sku','user_id',"$_SESSION[login]");
+                            foreach ($object_OrderValidationHandler->all_sku as $key => $value):
+
+                            $return=$object_CRUD->getRecordWithConditions('validate_return_date','return_date','user_id',"$_SESSION[login]",'sku', "$value[sku]");
+                            ?>
                             
                             <li class="flex justify-between items-center border-b py-5 border-gray-300">
                                 <?php
                                 $object_CRUD->getJoinbook('books','books_price','sku',"$value[sku]");                             
-                                ?>
-                                <div class="h-14 w-10 border">
-                                    <?=
-                                        '<img src="../Admin/BOOKS_IMAGES/' . $object_CRUD->row['cover_image'] . '" alt=""
-                                        class="h-full w-full object-fit">'
-                                    ?>
+                                ?>                                
+                                <div class="flex gap-5">
+                                    <div class="h-14 w-10 border">
+                                        <?=
+                                            '<img src="../Admin/BOOKS_IMAGES/' . $object_CRUD->row['cover_image'] . '" alt=""
+                                            class="h-full w-full object-fit">'
+                                        ?>
+                                    </div>
+                                    <div>
+                                        <p><?php echo $object_CRUD->row['title'] ?> ( <?php echo $object_CRUD->row['author'] ?> )</p>
+                                        <p>Return Date: <?=$return[0]["return_date"]?></p>
+                                    </div>
                                 </div>
-                                <p><?php echo $object_CRUD->row['title'] ?> ( <?php echo $object_CRUD->row['author'] ?> )</p>
-                                <p><b>Rs. <?php echo $object_CRUD->row['per_day_price']."</b>" ?><span class="text-sm">/per day</span></p>
-                                <p><b>Rs.
-                                    <?php     
-                                        // if(isset($return_date[0]['return_date'])){
-                                        $daysDifference = $object_OrderValidationHandler->getTotalDays(date('Y-m-d'), $return_date[0]['return_date']);          
-                                        $rent= $object_CRUD->row['per_day_price']* $daysDifference;
-                                        echo $rent."</b>";                                       
-                                        // }
-                                    ?>
-                                    <span class="text-sm">/<?=$daysDifference?> day</span>
-                                </p>
+                                <div class="flex gap-20">
+                                    <p><b>Rs. <?php echo $object_CRUD->row['per_day_price']."</b>" ?><span class="text-sm">/per day</span></p>
+                                    <p><b>Rs.
+                                        <?php     
+                                            $daysDifference = $object_OrderValidationHandler->getTotalDays(date('Y-m-d'), $return[0]["return_date"]);          
+                                            $rent= $object_CRUD->row['per_day_price']* $daysDifference;
+                                            echo $rent."</b>";                                       
+                                        ?>
+                                        <span class="text-sm">/<?=$daysDifference?> day</span>
+                                    </p>
+                                </div>
                                 
                             </li>                            
                             

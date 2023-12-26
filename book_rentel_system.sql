@@ -9,27 +9,34 @@
 -- select * from book where category='None';
 -- desc cart;
 -- select*from user_reg;
--- select*from book;
+
 -- select*from user_file;
 -- delete from user_reg where user_email='sajal@gmail.com';
 -- create database BookRentelSystem;
--- create database SecondStoryBookStore;
+-- create database SecondStoryBookStore;    
 use SecondStoryBookStore;
--- desc validate_return_date;
--- SELECT * FROM books;
+-- delete from orders where customer_name='jyoti'
+-- desc book_category;
+-- select*from books;
+SELECT sku FROM books where TRIM(category)='English';
+-- update books set category=1 where sku='Novel-1'; 
+-- select * from books where author='param';
+-- select* from book_category
 -- show tables;
 -- select*from return_order;
--- ALTER TABLE orders ADD subtotal int;
--- select*from Book_category;
+-- ALTER TABLE validate_return_date add sku varchar(255);
+-- select*from book_category;
 -- desc books;
--- ALTER TABLE books ADD FOREIGN KEY (category) REFERENCES book_category(category);
+-- alter table books add FOREIGN KEY (category) REFERENCES book_category(category);
+-- ADD FOREIGN KE
+-- ALTER TABLE orders add book_cover_image varchar(255);
 -- select sku, from books where category='English';
--- alter table books MODIFY COLUMN category varchar(255) not null;
+-- alter table orders MODIFY COLUMN customer_phone varchar(255) not null;
 -- select title from books where 'category'='Novel';
 -- desc validate_return_date;
 -- select*from return_order;
 -- select* from validate_return_date;
--- delete from books where sku='Novel-3';
+-- delete from validate_return_date where sku='Poetry-1';
 -- ALTER TABLE orders ADD review text;
 -- delete from orders where order_id='6585bc81cb834';
 
@@ -37,7 +44,7 @@ use SecondStoryBookStore;
 --     user_id varchar(255) not null,
 --     return_date date not null
 -- );
-desc return_order;
+-- desc return_order;
 -- create table cart(
 --     id varchar(255) not null,
 --     sku varchar(255) not null,
@@ -160,10 +167,10 @@ desc return_order;
 --     PRIMARY KEY(category)
 -- );
 -- drop table book_category;
--- ALTER TABLE book 
--- ADD CONSTRAINT category
--- FOREIGN KEY(book_category) 
--- REFERENCES book_category(category);
+ALTER TABLE books 
+ADD CONSTRAINT category
+FOREIGN KEY(category) 
+REFERENCES book_category(category);
 -- desc books;
 -- drop table book;
 -- create table books(

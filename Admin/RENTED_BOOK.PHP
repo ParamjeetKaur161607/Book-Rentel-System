@@ -1,7 +1,6 @@
 <?php
 require("ADMIN_PANEL.PHP");
 $pending_returns=$object_CRUD->getRecords('return_order');
-// var_dump($pending_returns);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,7 +19,6 @@ $pending_returns=$object_CRUD->getRecords('return_order');
             <?php if(isset($pending_returns)):?>
             <?php foreach ($pending_returns as $key => $value):
                 $object_CRUD->getJoinOrders('books','orders','return_order','sku','sku',"$value[sku]");
-                // var_dump($object_CRUD->row);
                 $emails=$object_CRUD->getRecord('user_registration','email','id',$value['user_id']);
                 ?>
                 <li class="bg-gray-100 mt-7 rounded-xl p-6 flex gap-10 border">
@@ -67,17 +65,12 @@ $pending_returns=$object_CRUD->getRecords('return_order');
                                 </ul>
                             </div>
                         </div>
-
-
                     </div>
-
-
                 </li>
             <?php endforeach; ?>
             <?php else: ?>
                 <?= "No return Pending"; ?>
                 <?php endif; ?>
-
         </ol>
 
     </section>

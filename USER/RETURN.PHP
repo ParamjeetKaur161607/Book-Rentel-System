@@ -6,54 +6,39 @@ if (!isset($_SESSION['login'])) {
 }
 $sku = $object_CRUD->getRecord('return_order', 'sku', 'user_id', $_SESSION['login']);
 
-// echo "<pre>";
-// var_dump($fine[0]["Fine"]);
-// echo "</pre>";
+if (isset($_POST['return'])) {
+    $fine = $object_CRUD->getRecord('orders', 'Fine', 'sku', $_GET['id']);
+    if ($fine[0]["Fine"] == 0) {
+        $object_CRUD->deleteRow('return_order', 'sku', "$_GET[id]", 'user_id', $_SESSION['login']);
+        if (!empty($_POST['review'])) {
+            $object_CRUD->updateRecord('orders', ['review' => "$_POST[review]"], 'sku', "$_GET[id]");
+        }
+        $object_CRUD->UpdateQuantity('+', "$_GET[id]");
+        header('location: RETURN.PHP');
+    } else {
+        $object_OrderValidationHandler->is_card_number_valid();
+        $object_OrderValidationHandler->is_name_on_card_valid();
+        $object_OrderValidationHandler->is_cvv_valid();
+        $object_OrderValidationHandler->is_expiry_date_valid();
 
-if(isset($_POST['return'])){
-    // if ($sku !== null && (is_array($sku) || is_object($sku))){
-        // foreach ($sku as $key => $value){
-            
-        // }
-
-        // $object_CRUD->getJoinOrders('books', 'orders', 'return_order', 'sku', 'sku', "$value[sku]");
-        $fine= $object_CRUD->getRecord('orders', 'Fine', 'sku', $_GET['id']);
-            if($fine[0]["Fine"] == 0){
-                $object_CRUD->deleteRow('return_order','sku',"$_GET[id]",'user_id',$_SESSION['login']);
-                    if(!empty($_POST['review'])){
-                        $object_CRUD->updateRecord('orders',['review'=>"$_POST[review]"],'sku',"$_GET[id]");
-                    }
-                    $object_CRUD->UpdateQuantity('+',"$_GET[id]");
-                    header('location: RETURN.PHP');
-            } else {
-                $object_OrderValidationHandler->is_card_number_valid();
-                $object_OrderValidationHandler->is_name_on_card_valid();
-                $object_OrderValidationHandler->is_cvv_valid();
-                $object_OrderValidationHandler->is_expiry_date_valid();
-
-                $errorVariables = [                    
-                    $object_OrderValidationHandler->error_card_number,
-                    $object_OrderValidationHandler->error_name_on_card,
-                    $object_OrderValidationHandler->error_cvv,
-                    $object_OrderValidationHandler->error_card_expiry_month,
-                    $object_OrderValidationHandler->error_card_expiry_year,                    
-                ];      
-                if ($object_OrderValidationHandler->is_array_empty($errorVariables)) {
-                    $object_CRUD->deleteRow('return_order','sku',"$_GET[id]",'user_id',$_SESSION['login']);
-                    if(!empty($_POST['review'])){
-                        $object_CRUD->updateRecord('orders',['review'=>"$_POST[review]"],'sku',"$_GET[id]");
-                    }
-                    $object_CRUD->UpdateQuantity('+',"$_GET[id]");
-                    header('location: RETURN.PHP');
-                }          
+        $errorVariables = [
+            $object_OrderValidationHandler->error_card_number,
+            $object_OrderValidationHandler->error_name_on_card,
+            $object_OrderValidationHandler->error_cvv,
+            $object_OrderValidationHandler->error_card_expiry_month,
+            $object_OrderValidationHandler->error_card_expiry_year,
+        ];
+        if ($object_OrderValidationHandler->is_array_empty($errorVariables)) {
+            $object_CRUD->deleteRow('return_order', 'sku', "$_GET[id]", 'user_id', $_SESSION['login']);
+            if (!empty($_POST['review'])) {
+                $object_CRUD->updateRecord('orders', ['review' => "$_POST[review]"], 'sku', "$_GET[id]");
             }
-        
-    // }
-        
-    
-    // $object_database->delete_from_returns($_GET['id'],$_SESSION['login']);
-    // $object_database->restoke_quantity($_GET['id']);
-    // header('location: RETURN.PHP');
+            $object_CRUD->UpdateQuantity('+', "$_GET[id]");
+            header('location: RETURN.PHP');
+        }
+    }
+
+
 }
 ?>
 <!DOCTYPE html>
@@ -74,7 +59,6 @@ if(isset($_POST['return'])){
             if ($sku !== null && (is_array($sku) || is_object($sku))):
                 foreach ($sku as $key => $value):
                     $object_CRUD->getJoinOrders('books', 'orders', 'return_order', 'sku', 'sku', "$value[sku]");
-                    // var_dump($object_CRUD->row);
                     ?>
                     <li class="border bg-gray-200 p-5 w-full space-y-10">
                         <div class="flex items-center justify-between">

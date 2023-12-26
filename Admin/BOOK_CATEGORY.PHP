@@ -1,7 +1,9 @@
 <?php
 require("ADMIN_PANEL.PHP");
-$id=$_GET['book_category'];
-$sku=$object_CRUD->getRecord('books','sku','category',$_GET['book_category']);
+$id = $_GET['book_category'];
+// $sku = $object_CRUD->getRecord('books', 'sku', 'category', $_GET['book_category']);
+$sku = $object_CRUD->getRecord('books', 'sku', 'category', 'english');
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,7 +15,7 @@ $sku=$object_CRUD->getRecord('books','sku','category',$_GET['book_category']);
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-200">
+<body class="">
     <section class="p-10 space-y-10 ml-80">
         <div class="flex justify-between mt-7">
             <h1 class="sm:text-2xl sm:font-bold">
@@ -21,9 +23,12 @@ $sku=$object_CRUD->getRecord('books','sku','category',$_GET['book_category']);
             </h1>
             <div class="space-x-2 flex ">
                 <a href="ADD_BOOK.PHP"
-                    class="bg-gray-400 text-white h-10 items-center flex justify-center px-5 rounded-lg">ADD BOOK</a>
-                <a href="CATEGORY.PHP" name="add_category"
-                    class="bg-gray-400 text-white h-10 items-center flex justify-center px-5 rounded-lg">ADD
+                    class="bg-blue-400 text-white h-10 items-center flex justify-center px-5 rounded-lg">ADD BOOK</a>
+                <a href="ADD_BOOK_CATEGORY.PHP" name="add_category"
+                    class="bg-blue-400 text-white h-10 items-center flex justify-center px-5 rounded-lg">ADD
+                    CATEGORY</a>
+                <a href="DELETE_CATEGORY.PHP" name="delete_category"
+                    class="bg-red-400 text-white h-10 items-center flex justify-center px-5 rounded-lg">DELETE
                     CATEGORY</a>
             </div>
         </div>
@@ -31,24 +36,24 @@ $sku=$object_CRUD->getRecord('books','sku','category',$_GET['book_category']);
             <form action="ALL_BOOKS.PHP" method="post">
                 <button class="px-2 underline">ALL</button>
             </form>
-            <?php $object_validation->category = $object_CRUD->getAllRecords('book_category','category');
+            <?php $object_validation->category = $object_CRUD->getAllRecords('book_category', 'category');
             foreach ($object_validation->category as $key => $value): ?>
                 <form action="BOOK_CATEGORY.PHP?book_category=<?php echo $value; ?>" method="post">
-                    <button class="px-2 underline">                        
-                        <?php                        
+                    <button class="px-2 underline">
+                        <?php
                         echo $value; ?>
                     </button>
-                </form>                
-            <?php endforeach;?>
+                </form>
+            <?php endforeach; ?>
         </div>
         <ul>
             <?php
             if (isset($sku)):
-                foreach ($sku as $key => $value): 
+                foreach ($sku as $key => $value):
+                    $object_CRUD->getJoinbook('books', 'books_price', 'sku', $value['sku']);
 
-                    $object_CRUD->getJoinbook('books','books_price','sku', $value['sku']);
-                ?>
-                    <li class="bg-gray-300 mt-7 rounded-xl p-6 flex items-center gap-10 text-gray-700">
+                    ?>
+                    <li class="bg-gray-100 border mt-7 rounded-xl p-6 flex items-center gap-10 text-gray-700">
                         <div class="h-28 w-24 border">
                             <?=
                                 '<img src="BOOKS_IMAGES/' . $object_CRUD->row['cover_image'] . '" alt=""
@@ -115,16 +120,15 @@ $sku=$object_CRUD->getRecord('books','sku','category',$_GET['book_category']);
                                     </dl>
                                 </div>
                             </div>
-                            <div class="flex gap-5">
-                                <form method="post"
-                                    action="UPDATE_BOOK.PHP?id=<?php echo $value; ?>" class="">
+                            <div class="flex flex-col gap-5 items-center">
+
+                                <form method="post" action="UPDATE_BOOK.PHP?id=<?php echo $value['sku']; ?>" class="">
                                     <button id=""
-                                        class="bg-green-700 text-white h-10 items-center flex justify-center px-5 rounded-full">Update</button>
+                                        class="bg-green-700 text-white h-8 items-center flex justify-center px-5 rounded-full">Update</button>
                                 </form>
-                                <form method="post"
-                                    action="DELETE_BOOK.PHP?id=<?php echo $value; ?>" class="">
+                                <form method="post" action="DELETE_BOOK.PHP?id=<?php echo $value['sku']; ?>" class="">
                                     <button name=""
-                                        class="bg-red-800 text-white h-10 items-center flex justify-center px-5 rounded-full">Delete</button>
+                                        class="bg-red-800 text-white h-8 items-center flex justify-center px-5 rounded-full">Delete</button>
                                 </form>
                             </div>
                         </div>

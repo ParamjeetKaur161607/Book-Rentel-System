@@ -4,6 +4,8 @@ include("USER_MENU.PHP");
 if(isset($_SESSION['login'])){
     $CartList=$object_CRUD->getRecord('cart','sku','id',$_SESSION['login']);
     $ReturnList=$object_CRUD->getRecord('return_order','sku','user_id',$_SESSION['login']);
+} else{
+    header('location: LOGIN.PHP');
 }
 
 if (isset($_POST['add_to_cart'])) {
@@ -111,7 +113,7 @@ if (isset($_POST['delete_cart'])) {
                             </div>
                         </li>
                     <?php endforeach; ?>
-                    <form action="ORDER_DETAILS.PHP" method="post">
+                    <form action="ORDER_DURATION.PHP" method="post">
                         <button class="bg-blue-800 text-white mt-10 px-10 py-2 flex justify-center w-full">Next</button>
                     </form>
                 <?php else: ?>

@@ -4,7 +4,7 @@ if (isset($_POST['register_user'])) {
     $object_validation->is_email_valid();
     $object_validation->is_user_email_exists();
     $object_validation->is_phone_valid();
-    $object_validation-> is_user_phone_exist();
+    $object_validation->is_user_phone_exist();
     $object_validation->is_name_valid();
     $object_validation->is_gender_valid();
     $object_validation->is_dob_valid();
@@ -138,7 +138,7 @@ if (isset($_POST['register_user'])) {
                         <span class="text-red-500 text-sm">
                             <?php echo $object_validation->error_address; ?>
                         </span>
-                    </div>                    
+                    </div>
                     <div class="flex flex-col">
                         <label for="user_security">Your favourite author?</label>
                         <input type="password" name="user_security" id="user_security"

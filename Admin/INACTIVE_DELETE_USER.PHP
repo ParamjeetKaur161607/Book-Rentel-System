@@ -1,30 +1,36 @@
 <?php
 require("ADMIN_PANEL.PHP");
-$id=$_GET['user_id'];
-$userStatus=$object_CRUD->getRecord('user_registration','status','id',$id);
+$id = $_GET['user_id'];
+$userStatus = $object_CRUD->getRecord('user_registration', 'status', 'id', $id);
 
 if (isset($_POST['user_delete'])) {
-    $pending_returns=$object_CRUD->getRecord('return_order','sku','user_id',$_GET['user_id']);
-    if(empty($pending_returns)){
+    $pending_returns = $object_CRUD->getRecord('return_order', 'sku', 'user_id', $_GET['user_id']);
+    if (empty($pending_returns)) {
         $object_CRUD->deleteRecord('validate_return_date', 'user_id', $_GET['user_id']);
         $object_CRUD->deleteRecord('cart', 'id', $_GET['user_id']);
         $object_CRUD->deleteRecord('user_registration', 'id', $_GET['user_id']);
         unset($_SESSION['login']);
-        header('location: USER.PHP');
+        // header('location: USER.PHP');
+        echo "<script> window.location.href='USER.PHP' </script>";
+        
     } else {
-        header('location: USER_DELETE_ALERT.PHP');
+        // header('location: USER_DELETE_ALERT.PHP');
+        echo "<script> window.location.href='USER_DELETE_ALERT.PHP' </script>";
+        
     }
 }
 
-if(isset($_POST['status'])){
-    if($userStatus[0]['status']!="INACTIVE"){
-        $object_CRUD->updateRecord('user_registration', ['status'=>'INACTIVE'],'id', $id);
-        // $object_database->update_user_status("INACTIVE",$object_database->row['user_email']);
-        header("location:USER.PHP");
-    }else{
-        $object_CRUD->updateRecord('user_registration', ['status'=>'ACTIVE'],'id', $id);
+if (isset($_POST['status'])) {
+    if ($userStatus[0]['status'] != "INACTIVE") {
+        $object_CRUD->updateRecord('user_registration', ['status' => 'INACTIVE'], 'id', $id);
+        // header("location:USER.PHP");
+        echo "<script> window.location.href='USER.PHP' </script>";
 
-        header("location:USER.PHP");
+    } else {
+        $object_CRUD->updateRecord('user_registration', ['status' => 'ACTIVE'], 'id', $id);
+        echo "<script> window.location.href='USER.PHP' </script>";
+
+        // header("location:USER.PHP");
     }
 }
 ?>
@@ -40,7 +46,7 @@ if(isset($_POST['status'])){
 
 <body>
     <main class="flex justify-center pt-40 h-screen w-full bg-black/40 pl-80">
-        <div class="bg-gray-100 space-y-5 h-fit p-10">            
+        <div class="bg-gray-100 space-y-5 h-fit p-10">
             <div class="flex gap-5 items-center">
                 <svg class="w-10 h-10 " xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                     version="1.1" viewBox="0 0 16 16" fill="currentColor">
@@ -54,23 +60,27 @@ if(isset($_POST['status'])){
             </div>
             <ul class="list-disc">
                 <li>Click DELETE, if you want to delete parmanelty to this user.</li>
-                <li>Click <?php
-                        if($userStatus[0]['status']!="INACTIVE"){
-                            echo "INACTIVE";
-                        }else{
-                            echo "ACTIVE";
-                        }
-                    ?>, if you to delete this acount temprarly.</li>
+                <li>Click
+                    <?php
+                    if ($userStatus[0]['status'] != "INACTIVE") {
+                        echo "INACTIVE";
+                    } else {
+                        echo "ACTIVE";
+                    }
+                    ?>, if you to delete this acount temprarly.
+                </li>
             </ul>
             <div class="flex gap-5 justify-end">
                 <form action="" method="post">
-                    <button name="status" class="bg-yellow-600 rounded-md py-2 px-5 text-white"><?php
-                        if($userStatus[0]['status']!="INACTIVE"){
+                    <button name="status" class="bg-yellow-600 rounded-md py-2 px-5 text-white">
+                        <?php
+                        if ($userStatus[0]['status'] != "INACTIVE") {
                             echo "INACTIVE";
-                        }else{
+                        } else {
                             echo "ACTIVE";
                         }
-                    ?></button>
+                        ?>
+                    </button>
                 </form>
                 <form action="" method="post">
                     <button name="user_delete" class="bg-red-800 rounded-md py-2 px-5 text-white">DELETE</button>

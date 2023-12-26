@@ -1,18 +1,18 @@
 <?php
 require("ADMIN_PANEL.PHP");
 
-$id=$_GET['id'];
-$admin=$object_CRUD->getRecord('admin','id','id',$id);
-$super_admin=$object_CRUD->getRecord('super_admin','id','id',$id);
+$id = $_GET['id'];
+$admin = $object_CRUD->getRecord('admin', 'id', 'id', $id);
+$super_admin = $object_CRUD->getRecord('super_admin', 'id', 'id', $id);
 
-if($admin==null){
+if ($admin == null) {
     foreach ($super_admin as $key => $value) {
-        $object_CRUD->getAllFields('super_admin','id',"$value[id]");
-    }    
-}else{
+        $object_CRUD->getAllFields('super_admin', 'id', "$value[id]");
+    }
+} else {
     foreach ($admin as $key => $value) {
-        $object_CRUD->getAllFields('admin','id',"$value[id]");
-    } 
+        $object_CRUD->getAllFields('admin', 'id', "$value[id]");
+    }
 }
 
 ?>
@@ -28,7 +28,7 @@ if($admin==null){
 
 <body class="">
     <main>
-    <?php  ?>
+        <?php ?>
         <section class="flex pl-80">
 
             <div class="w-full p-20 space-y-5">
@@ -39,7 +39,7 @@ if($admin==null){
                         <label for="name">Admin Name</label>
                         <input type="text" name="name" id="name"
                             class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500" value="<?php
-                            echo $object_CRUD->record['name'];                            
+                            echo $object_CRUD->record['name'];
                             ?>">
 
                         <span class="text-red-500 text-sm">
@@ -51,7 +51,7 @@ if($admin==null){
                         <input type="text" name="email" id="email"
                             class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500" value="<?php
                             echo $object_CRUD->record['email'];
-                            
+
                             ?>">
                         <span class="text-red-500 text-sm">
                             <?php echo $object_validation->error_email ?>
@@ -61,7 +61,7 @@ if($admin==null){
                         <label for="phone">Admin Phone</label>
                         <input type="text" name="phone" id="phone"
                             class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500" value="<?php
-                            echo $object_CRUD->record['phone'];                            
+                            echo $object_CRUD->record['phone'];
                             ?>">
                         <span class="text-red-500 text-sm">
                             <?php echo $object_validation->error_phone ?>
@@ -71,10 +71,10 @@ if($admin==null){
                         <div class="flex flex-col flex-1">
                             <label for="gender">Admin Gender</label>
                             <select name="gender" id="gender"
-                                class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500">                                
+                                class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500">
                                 <option value="male" <?php echo ($object_CRUD->record["gender"] === 'male') ? 'selected' : ''; ?>>Male</option>
-                            <option value="female" <?php echo ($object_CRUD->record["gender"] === 'female') ? 'selected' : ''; ?>>Female</option>
-                            <option value="others" <?php echo ($object_CRUD->record["gender"] === 'others') ? 'selected' : ''; ?>>Others</option>
+                                <option value="female" <?php echo ($object_CRUD->record["gender"] === 'female') ? 'selected' : ''; ?>>Female</option>
+                                <option value="others" <?php echo ($object_CRUD->record["gender"] === 'others') ? 'selected' : ''; ?>>Others</option>
                             </select>
                             <span class="text-red-500 text-sm">
                                 <?php echo $object_validation->error_gender; ?>
@@ -83,7 +83,8 @@ if($admin==null){
                         <div class="flex flex-col flex-1">
                             <label for="dob">Admin's DOB</label>
                             <input type="date" name="dob" id="dob"
-                                class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500" value="<?php echo $object_CRUD->record["dob"];?>">
+                                class="outline-none border-b border-gray-500 bg-grayy-200 h-10 text-gray-500"
+                                value="<?php echo $object_CRUD->record["dob"]; ?>">
                             <span class="text-red-500 text-sm">
                                 <?php echo $object_validation->error_dob; ?>
                             </span>
@@ -94,7 +95,7 @@ if($admin==null){
                         <label for="address">Admin Address</label>
                         <textarea name="address" id="" cols="30" rows="1"
                             class="outline-none pb-4 border-b border-gray-500 text-gray-500"><?php
-                            echo $object_CRUD->record['address'];                            
+                            echo $object_CRUD->record['address'];
                             ?>
 
                         </textarea>
@@ -124,7 +125,7 @@ if($admin==null){
                                 class="outline-none bg-grayy-200 h-10">
                             <?php
                             echo $object_CRUD->record['profile_picture'];
-                            
+
                             ?>
                         </div>
                         <span class="text-red-500 text-sm">
@@ -144,11 +145,12 @@ if($admin==null){
                     <?php endif; ?>
 
                 </form>
-                <?php if(isset($_SESSION['admin_login'])):?>
-                <form action="" method="post" class="pr-10 flex justify-end">
-                    <button name="delete_admin_self" class="bg-red-800 text-white px-5 py-1 rounded-md">Delete Account</button>
-                </form>
-                <?php endif;?>
+                <?php if (isset($_SESSION['admin_login'])): ?>
+                    <form action="" method="post" class="pr-10 flex justify-end">
+                        <button name="delete_admin_self" class="bg-red-800 text-white px-5 py-1 rounded-md">Delete
+                            Account</button>
+                    </form>
+                <?php endif; ?>
             </div>
 
         </section>

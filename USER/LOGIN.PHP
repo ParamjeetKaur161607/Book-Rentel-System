@@ -1,9 +1,9 @@
-<?php  
+<?php
 
-include("USER_MENU.PHP"); 
+include("USER_MENU.PHP");
 if (isset($_POST['login_user'])) {
     $object_LoginValidationHandler->user_login();
-    
+
 }
 
 ?>
@@ -18,17 +18,12 @@ if (isset($_POST['login_user'])) {
 </head>
 
 <body class="">
-    <main class="h-screen">     
+    <main class="h-screen">
         <section class="flex">
-            <div class="bg-black bg-[url('../IMAGES/STORE.jpeg')] bg-center  h-screen w-1/3 p-10">            
+            <div class="bg-black bg-[url('../IMAGES/STORE.jpeg')] bg-center  h-screen w-1/3 p-10">
             </div>
             <div class="w-full p-36 space-y-10">
-                <h1 class="text-5xl font-bold text-center">LOGIN</h1>
-                <?php 
-                // echo $object_database->login_user_data;
-                // $object_database->check_users_status($object_validation->email);
-                //     print_r($object_database->row);
-                    ?>
+                <h1 class="text-5xl font-bold text-center">LOGIN</h1>                
                 <form action="" method="post" class="p-10 rounded-lg space-y-10 w-full">
                     <div class="flex flex-col gap-2">
                         <label for="user_email_login">User Email</label>

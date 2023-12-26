@@ -1,3 +1,10 @@
+<?php
+include("USER_MENU.PHP");
+if (!isset($_SESSION['login'])) {
+    header("Location: LOGIN.PHP");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 

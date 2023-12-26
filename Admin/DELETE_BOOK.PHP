@@ -1,15 +1,17 @@
 <?php
 require("ADMIN_PANEL.PHP");
-$id=$_GET['id'];
-$PendingReturns=$object_CRUD->getAllRecords('return_order','sku');
-if(isset($_POST['delete_book'])){
-    if(!in_array($id, $PendingReturns)){
-        $object_CRUD->deleteRecord('cart','sku',$id);
-        $object_CRUD->deleteRecord('books_price','sku',$id);
-        $object_CRUD->deleteRecord('books','sku',$id);
-        header("location:ALL_BOOKS.PHP");
+$id = $_GET['id'];
+$PendingReturns = $object_CRUD->getAllRecords('return_order', 'sku');
+if (isset($_POST['delete_book'])) {
+    if (!in_array($id, $PendingReturns)) {
+        $object_CRUD->deleteRecord('cart', 'sku', $id);
+        $object_CRUD->deleteRecord('books_price', 'sku', $id);
+        $object_CRUD->deleteRecord('books', 'sku', $id);
+        // header("location:ALL_BOOKS.PHP");
+        echo "<script> window.location.href='ALL_BOOKS.PHP' </script>";
     } else {
-        header("location: ALERT.PHP");
+        // header("location: ALERT.PHP");
+        echo "<script> window.location.href='ALERT.PHP' </script>";
     }
 }
 ?>
@@ -35,12 +37,12 @@ if(isset($_POST['delete_book'])){
                 </svg>
                 <div>
                     <h2 class="font-bold text-xl">Are you sure to delete this book(
-                        <?= $id?>)!
+                        <?= $id ?>)!
                     </h2>
                     <p>Once you deleted this book, you can't restore it again</p>
                 </div>
             </div>
-            
+
             <div class="flex gap-5 justify-end">
                 <a href="ALL_BOOKS.PHP" class="bg-green-700 rounded-md py-2 px-5 text-white">CANCEL</a>
                 <form action="" method="post">

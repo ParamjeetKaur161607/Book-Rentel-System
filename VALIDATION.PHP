@@ -4,7 +4,7 @@ include_once("DATABASE.PHP");
 // trait for validation checking
 trait validation_trait
 {
-    public $name, $email, $address, $phone, $gender, $dob, $security_question, $password, $card_number, $name_on_card, $cvv, $card_expiry_month, $card_expiry_year, $profile_picture, $profile_picture_name, $profile_picture_path, $date, $category, $duration, $payment, $start_date, $max_duration, $return_date, $sale_price, $daysDifference, $book_image_path, $book_image_name, $insert_data, $old_password,$alert,$search;
+    public $name, $email, $address, $phone, $gender, $dob, $security_question, $password, $card_number, $name_on_card, $cvv, $card_expiry_month, $card_expiry_year, $profile_picture, $profile_picture_name, $profile_picture_path, $date, $category, $duration, $payment, $start_date, $max_duration, $return_date, $sale_price, $daysDifference, $book_image_path, $book_image_name, $insert_data, $old_password, $alert, $search;
 
     public $error_name, $error_email, $error_address, $error_phone, $error_gender, $error_dob, $error_security_question, $error_password, $error_card_number, $error_name_on_card, $error_cvv, $error_card_expiry_month, $error_card_expiry_year, $error_profile_picture, $error_category, $error_duration, $error_payment;
 
@@ -222,14 +222,7 @@ class BookValidationHandler extends database
         if (!$this->is_length_valid($this->book_sku, 20)) {
             $this->error_book_sku = "The maximum length of SKU can be 20 only!";
             return;
-        }
-
-
-        if (in_array($this->book_sku, $this->getAllRecords('books', 'sku'))) {
-            $this->error_book_sku = "This SKU is already existed in the database!";
-            return;
-        }
-
+        }        
     }
 
     /**
@@ -377,41 +370,6 @@ class OrderValidationHandler extends database
 {
     use validation_trait;
 
-
-    /**
-     *Function to check whether the selected duretion date of rent is valid or not.
-     *Validate that user can't select the past date as return date of the book.
-     *As per our company policy we can't give the book more than 2 months on rent) 
-     *
-     * @return void 
-     */
-    public function is_duration_valid()
-    {
-        $this->duration = $_POST['duration'];
-        $this->start_date = $this->current_date();
-
-        $date1 = new DateTime($this->start_date);
-        $date2 = new DateTime($this->duration);
-
-        $interval = $date1->diff($date2);
-        $this->daysDifference = $interval->days;
-        if ($this->is_not_empty($this->duration) || !isset($this->duration)) {
-
-            if ($this->daysDifference > 70) {
-                $this->error_duration = "You can not buy this book more then 2 months on rent!";
-                return;
-            }
-
-            if ($date2 < $date1) {
-                $this->error_duration = "Please select valid date!";
-                return;
-            }
-
-        } else {
-            $this->error_duration = "This feild can't be empty!";
-        }
-    }
-
     /**
      *Function to check whether the card number is empty or not.
      *Validate card number that only numerical data can be entred.
@@ -522,12 +480,12 @@ class OrderValidationHandler extends database
     {
         $order_date = new DateTime($start_date);
         $return_date = new DateTime($end_date);
-        if($return_date >$order_date){
+        if ($return_date > $order_date) {
             $interval = $order_date->diff($return_date);
             return $interval->days;
         }
-        
-        
+
+
     }
 }
 
@@ -616,6 +574,11 @@ class ValidationHandler extends database
 
     }
 
+    /**
+     *Check whether the user_email is already exist in database or not 
+     *
+     * @return void 
+     */
     public function is_user_email_exists()
     {
         $all_emails = $this->getAllRecords('user_registration', 'email');
@@ -625,6 +588,11 @@ class ValidationHandler extends database
         }
     }
 
+    /**
+     *Check whether the admin_email is already exist in database or not 
+     *
+     * @return void 
+     */
     public function is_admin_email_exists()
     {
         $all_emails = $this->getAllRecords('admin', 'email');
@@ -660,6 +628,12 @@ class ValidationHandler extends database
 
     }
 
+    /**
+     *Check whether the user_phone is already exist in database or not 
+     *
+     * @return void 
+     */
+
     public function is_user_phone_exist()
     {
         $all_phones = $this->getAllRecords('user_registration', 'phone');
@@ -668,6 +642,12 @@ class ValidationHandler extends database
             return;
         }
     }
+
+    /**
+     *Check whether the admin_phone is already exist in database or not 
+     *
+     * @return void 
+     */
 
     public function is_admin_phone_exist()
     {
@@ -834,39 +814,39 @@ class LoginValidationHandler extends database
     function user_login()
     {
         $this->email = $_POST['user_email_login'];
-        $this->password = $_POST['user_password_login'];        
+        $this->password = $_POST['user_password_login'];
 
         if (!empty($_SESSION['login'])) {
             $this->error_email = "Can't login multiple users at the same time";
         } else {
             $allEmails = $this->getAllRecords('user_registration', 'email');
-        if (in_array($this->email, $allEmails)) {
-            $this->getPassword('user_registration', $this->email);
-            if (password_verify($this->password, $this->hashedPassword)) {
-                $status = $this->getRecord('user_registration', 'status', 'email', $this->email);
-                if ($status[0]['status'] == 'ACTIVE' || $status[0]['status'] == 'active') {
-                    if (!strlen($this->error_email) || !strlen($this->error_password)) {
-                        $id = $this->getRecord('user_registration', 'id', 'email', $this->email);
-                        $_SESSION['login'] = $id[0]['id'];
-                        header("location: INDEX.PHP");
+            if (in_array($this->email, $allEmails)) {
+                $this->getPassword('user_registration', $this->email);
+                if (password_verify($this->password, $this->hashedPassword)) {
+                    $status = $this->getRecord('user_registration', 'status', 'email', $this->email);
+                    if ($status[0]['status'] == 'ACTIVE' || $status[0]['status'] == 'active') {
+                        if (!strlen($this->error_email) || !strlen($this->error_password)) {
+                            $id = $this->getRecord('user_registration', 'id', 'email', $this->email);
+                            $_SESSION['login'] = $id[0]['id'];
+                            header("location: INDEX.PHP");
+                        }
+
+                    } else {
+                        $this->error_email = 'Please register yourself first!';
                     }
 
                 } else {
-                    $this->error_email = 'Please register yourself first!';
+
+                    $this->error_password = 'Password is incorrect!';
                 }
 
             } else {
 
-                $this->error_password = 'Password is incorrect!';
+                $this->error_email = 'Please register yourself first/';
             }
-
-        } else {
-
-            $this->error_email = 'Please register yourself first/';
-        }
         }
 
-        
+
 
 
 
@@ -903,15 +883,14 @@ class LoginValidationHandler extends database
             } else {
                 $this->error_password = 'Password is incorrect!';
             }
-                } 
-        else {
+        } else {
 
             $super_admin_email = $this->getAllRecords('super_admin', 'email');
             if (in_array($this->email, $super_admin_email)) {
                 $password = $this->getRecord('super_admin', 'password', 'email', $this->email);
                 if ($this->password == $password[0]["password"]) {
                     if (!strlen($this->error_email) || !strlen($this->error_password)) {
-                        $id = $this->getRecord('super_admin', 'id', 'email', $this->email);                        
+                        $id = $this->getRecord('super_admin', 'id', 'email', $this->email);
 
                         $_SESSION['super_admin_login'] = $id[0]['id'];
                         header("location:ADMIN_DASHBOARD.PHP");
@@ -943,21 +922,6 @@ $object_BookValidationHandler = new BookValidationHandler("localhost", "param", 
 $object_LoginValidationHandler = new LoginValidationHandler("localhost", "param", "161607", "SecondStoryBookStore");
 $object_OrderValidationHandler = new OrderValidationHandler("localhost", "param", "161607", "SecondStoryBookStore");
 
-// $all_sku=$object_CRUD->getRecord('books','sku','category','Novel');
-// var_dump($all_sku);
-// $obj = new abc("localhost", "param", "161607", "SecondStoryBookStore");
-// $xyz = array('Novel-1', 'English-1');
-// var_dump($_SESSION);
-// $id = $object_CRUD->getRecord('super_admin', 'id', 'email', 'paramjeetkaur@gmail.com');
-// var_dump($id);
-// foreach ($xyz as $key => $value) {
-//     $obj->getJoin('books','books_price','sku',$value);
-
-//     echo "<pre>";
-//     var_dump($obj->row);
-//     echo "<pre>";
-
-// // }
 if (isset($_POST['delete_admin_self'])) {
     if (isset($_SESSION['admin_login'])) {
         $object_CRUD->deleteRecord('admin', 'id', $_SESSION['admin_login']);
@@ -997,7 +961,6 @@ if (isset($_POST['update_user'])) {
     $object_validation->is_gender_valid();
     $object_validation->is_email_valid();
     $all_emails = $object_CRUD->getAllRecords('user_registration', 'email');
-    var_dump(in_array($object_validation->email, $all_emails));
     if (in_array($object_validation->email, $all_emails)) {
         $existingEmail = $object_CRUD->getRecord('user_registration', 'email', 'id', $_SESSION['login']);
         if ($object_validation->email !== $existingEmail[0]['email']) {
@@ -1252,38 +1215,160 @@ if (isset($_POST['update_admin'])) {
     }
 }
 
-if(isset($_POST['search'])){
-if(isset($_POST['search_category'])){
-    switch ($_POST['search_category']) {
-        case 'all':
-            if($object_CRUD->search('books','sku','author',$_POST['search_data'])){
-                $sku=$object_CRUD->search('books','sku','author',$_POST['search_data']);
-            } else{
-                $sku=$object_CRUD->search('books','sku','title',$_POST['search_data']);
-            }  
-            break;
-        case 'author':
-            $sku=$object_CRUD->search('books','sku','author',$_POST['search_data']);
-            break;
-        case 'title':
-            $sku=$object_CRUD->search('books','sku','title',$_POST['search_data']);
-            break;
-        case 'category':
-            $sku=$object_CRUD->search('books','sku','category',$_POST['search_data']);
-            break;
-        case 'SKU':
-            if($object_CRUD->getRecord('books','sku','sku',$_POST['search_data'])){
-                $sku=$object_CRUD->getRecord('books','sku','sku',$_POST['search_data']);
-            } else{
-                $object_validation->search= "no record found";  
-            }
-            
-            break;
-        default:
-            
-        break;
+if (isset($_POST['search'])) {
+    if (isset($_POST['search_category'])) {
+        switch ($_POST['search_category']) {
+            case 'all':
+                if ($object_CRUD->search('books', 'sku', 'author', $_POST['search_data'])) {
+                    $sku = $object_CRUD->search('books', 'sku', 'author', $_POST['search_data']);
+                } elseif ($object_CRUD->search('books', 'sku', 'title', $_POST['search_data'])) {
+                    $sku = $object_CRUD->search('books', 'sku', 'title', $_POST['search_data']);
+                } elseif ($object_CRUD->search('books', 'sku', 'category', $_POST['search_data'])) {
+                    $sku = $object_CRUD->search('books', 'sku', 'category', $_POST['search_data']);
+                } elseif ($object_CRUD->getRecord('books', 'sku', 'sku', $_POST['search_data'])) {
+                    $sku = $object_CRUD->getRecord('books', 'sku', 'sku', $_POST['search_data']);
+                } elseif ($object_CRUD->getRecord('Orders', 'sku', 'order_id', $_POST['search_data'])) {
+                    $orders = $object_CRUD->getRecord('Orders', 'sku', 'order_id', $_POST['search_data']);
+                } elseif ($object_CRUD->getRecord('Orders', 'sku', 'user_id', $_POST['search_data'])) {
+                    $orders = $object_CRUD->getRecord('Orders', 'sku', 'user_id', $_POST['search_data']);
+                } elseif ($object_CRUD->getRecord('Orders', 'sku', 'sku', $_POST['search_data'])) {
+                    $orders = $object_CRUD->getRecord('Orders', 'sku', 'sku', $_POST['search_data']);
+                } elseif ($object_CRUD->search('Orders', 'sku', 'customer_name', $_POST['search_data'])) {
+                    $orders = $object_CRUD->search('Orders', 'sku', 'customer_name', $_POST['search_data']);
+                } elseif ($object_CRUD->getRecord('User_registration', 'id', 'id', $_POST['search_data'])) {
+                    $user = $object_CRUD->getRecord('User_registration', 'id', 'id', $_POST['search_data']);
+                } elseif ($object_CRUD->search('User_registration', 'id', 'name', $_POST['search_data'])) {
+                    $user = $object_CRUD->search('User_registration', 'id', 'name', $_POST['search_data']);
+                } elseif ($object_CRUD->getRecord('User_registration', 'id', 'email', $_POST['search_data'])) {
+                    $user = $object_CRUD->getRecord('User_registration', 'id', 'email', $_POST['search_data']);
+                } elseif ($object_CRUD->getRecord('return_order', 'sku', 'user_id', $_POST['search_data'])) {
+                    $rented = $object_CRUD->getRecord('return_order', 'sku', 'user_id', $_POST['search_data']);
+                } elseif ($object_CRUD->getRecord('return_order', 'sku', 'order_id', $_POST['search_data'])) {
+                    $rented = $object_CRUD->getRecord('return_order', 'sku', 'order_id', $_POST['search_data']);
+                } elseif ($object_CRUD->getRecord('return_order', 'sku', 'sku', $_POST['search_data'])) {
+                    $rented = $object_CRUD->getRecord('return_order', 'sku', 'sku', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "Record not found";
+                }
+                break;
+            case 'author':
+                if ($object_CRUD->search('books', 'sku', 'author', $_POST['search_data'])) {
+                    $sku = $object_CRUD->search('books', 'sku', 'author', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "Author not found";
+                }
+
+                break;
+            case 'title':
+                if ($object_CRUD->search('books', 'sku', 'title', $_POST['search_data'])) {
+                    $sku = $object_CRUD->search('books', 'sku', 'title', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "Title not found";
+                }
+
+                break;
+            case 'category':
+                if ($object_CRUD->search('books', 'sku', 'category', $_POST['search_data'])) {
+                    $sku = $object_CRUD->search('books', 'sku', 'category', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "Category not found!";
+                }
+                break;
+            case 'SKU':
+                if ($object_CRUD->getRecord('books', 'sku', 'sku', $_POST['search_data'])) {
+                    $sku = $object_CRUD->getRecord('books', 'sku', 'sku', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "SKU not found";
+                }
+
+                break;
+            case 'order_by_order_id':
+                if ($object_CRUD->getRecord('Orders', 'sku', 'order_id', $_POST['search_data'])) {
+                    $orders = $object_CRUD->getRecord('Orders', 'sku', 'order_id', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "Order not found";
+                }
+
+                break;
+            case 'order_by_user_id':
+                if ($object_CRUD->getRecord('Orders', 'sku', 'user_id', $_POST['search_data'])) {
+                    $orders = $object_CRUD->getRecord('Orders', 'sku', 'user_id', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "Order not found";
+                }
+
+                break;
+            case 'order_by_sku':
+                if ($object_CRUD->getRecord('Orders', 'sku', 'sku', $_POST['search_data'])) {
+                    $orders = $object_CRUD->getRecord('Orders', 'sku', 'sku', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "Order not found";
+                }
+
+                break;
+            case 'order_by_customer_name':
+                if ($object_CRUD->search('Orders', 'sku', 'customer_name', $_POST['search_data'])) {
+                    $orders = $object_CRUD->search('Orders', 'sku', 'customer_name', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "Order not found";
+                }
+
+                break;
+            case 'user_by_id':
+                if ($object_CRUD->getRecord('User_registration', 'id', 'id', $_POST['search_data'])) {
+                    $user = $object_CRUD->getRecord('User_registration', 'id', 'id', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "User not found";
+                }
+
+                break;
+            case 'user_by_name':
+                if ($object_CRUD->search('User_registration', 'id', 'name', $_POST['search_data'])) {
+                    $user = $object_CRUD->search('User_registration', 'id', 'name', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "User not found";
+                }
+
+                break;
+            case 'user_by_email':
+                if ($object_CRUD->getRecord('User_registration', 'id', 'email', $_POST['search_data'])) {
+                    $user = $object_CRUD->getRecord('User_registration', 'id', 'email', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "User not found";
+                }
+
+                break;
+            case 'rented_book_by_user_id':
+                if ($object_CRUD->getRecord('return_order', 'sku', 'user_id', $_POST['search_data'])) {
+                    $rented = $object_CRUD->getRecord('return_order', 'sku', 'user_id', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "No Returns Pending";
+                }
+
+                break;
+            case 'rented_book_by_order_id':
+                if ($object_CRUD->getRecord('return_order', 'sku', 'order_id', $_POST['search_data'])) {
+                    $rented = $object_CRUD->getRecord('return_order', 'sku', 'order_id', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "No Returns Pending";
+                }
+
+                break;
+            case 'rented_book_by_sku':
+                if ($object_CRUD->getRecord('return_order', 'sku', 'sku', $_POST['search_data'])) {
+                    $rented = $object_CRUD->getRecord('return_order', 'sku', 'sku', $_POST['search_data']);
+                } else {
+                    $object_validation->search = "No Returns Pending";
+                }
+
+                break;
+            default:
+
+                break;
+        }
+    } else {
+        $object_validation->search = "NO Record Found";
     }
-} 
- 
+
 }
 ?>

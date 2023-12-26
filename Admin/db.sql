@@ -1,2 +1,0 @@
-use SecondStoryBookStore
-show tables;

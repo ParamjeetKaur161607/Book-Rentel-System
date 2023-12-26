@@ -21,8 +21,8 @@ $all_orders=$object_CRUD->getRecords('orders');
         <ol class="list-decimal">
             <?php 
             if(isset($all_orders)):
-            foreach ($all_orders as $key => $value):   
-                $object_CRUD->getJoinOrders('orders','books','books_price','sku','sku',$value['sku']);
+            foreach ($all_orders as $key => $value):  
+                // $object_CRUD->getJoinOrders('orders','books','books_price','sku','sku',$value['sku']);
                 $emails=$object_CRUD->getRecord('user_registration','email','id',$value['user_id']); 
                              
                 ?>
@@ -30,7 +30,7 @@ $all_orders=$object_CRUD->getRecords('orders');
                 <li class="bg-white mt-7 rounded-xl p-6 flex gap-10">
                     <div class="h-28 w-28 border">
                         <?=
-                            '<img src="BOOKS_IMAGES/' . $object_CRUD->row['cover_image'] . '" alt=""
+                            '<img src="BOOKS_IMAGES/' . $value['book_cover_image'] . '" alt=""
                                 class="h-full w-full object-fit">'
                             ?>
                     </div>
@@ -55,12 +55,12 @@ $all_orders=$object_CRUD->getRecords('orders');
                             <div class="flex justify-between w-full">
                                 <ul class="font-semi-bold text-lg">
                                     <li><b>Quantity: </b> 1</li>
-                                    <li><b>SKU: </b><?=$object_CRUD->row['sku']; ?></li>
+                                    <li><b>SKU: </b><?=$value['sku']; ?></li>
 
                                 </ul>
                                 <ul class="font-semi-bold text-lg">
-                                <li><b>Title: </b><?=$object_CRUD->row['title']; ?></li>
-                                    <li><b>Author: </b><?=$object_CRUD->row['author']; ?></li>
+                                <li><b>Title: </b><?=$value['book_title']; ?></li>
+                                    <li><b>Author: </b><?=$value['book_author']; ?></li>
 
                                 </ul>
                                 <ul>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 include("../VALIDATION.PHP");
 ?>
 <!DOCTYPE html>
@@ -12,18 +12,18 @@ include("../VALIDATION.PHP");
 </head>
 
 <body class="">
-    <main class="">        
-        <section class="flex">  
+    <main class="">
+        <section class="flex">
             <div class="bg-black bg-[url('../IMAGES/LIBRARY.jpeg')] h-screen w-1/3 p-10">
-            <!-- <a href="INDEX.PHP" class="bg-black/50 text-white font-bold px-5 py-1 rounded-lg">Home</a> -->
-            </div>          
+            </div>
             <div class="w-full p-36 space-y-10">
                 <h1 class="text-5xl font-bold text-center">ADMIN LOGIN</h1>
                 <form action="" method="post" class="p-10 rounded-lg space-y-10 w-full">
                     <div class="flex flex-col gap-2">
                         <label for="admin_email_login">Admin Email</label>
                         <input type="text" name="admin_email_login" id="admin_email_login"
-                            class="border-b border-gray-500 bg-grayy-200 h-10 outline-none" value="<?= "$object_LoginValidationHandler->email" ;?>">
+                            class="border-b border-gray-500 bg-grayy-200 h-10 outline-none"
+                            value="<?= "$object_LoginValidationHandler->email"; ?>">
                     </div>
                     <div class="flex flex-col gap-2">
                         <label for="admin_password_login">Password</label>
@@ -39,7 +39,7 @@ include("../VALIDATION.PHP");
                         echo $object_LoginValidationHandler->error_password;
                         ?>
                     </div>
-                </form>                
+                </form>
             </div>
 
         </section>

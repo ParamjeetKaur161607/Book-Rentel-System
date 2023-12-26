@@ -1,9 +1,10 @@
 <?php 
-require("ADMIN_PANEL.PHP");
+include_once("ADMIN_PANEL.PHP");
+// require("../VALIDATION.PHP");
+
 $id=$_GET['id'];
 $object_CRUD->getJoinbook('books','books_price','sku',"$id");
-if (isset($_POST['update_book'])) {
-    // $object_BookValidationHandler->is_book_sku_valid();
+if (isset($_POST['update_book'])) {    
     $object_BookValidationHandler->is_book_title_valid();
     $object_BookValidationHandler->is_book_author_valid();
     $object_BookValidationHandler->is_book_category_valid();
@@ -11,7 +12,6 @@ if (isset($_POST['update_book'])) {
     $object_BookValidationHandler->is_book_quantity_valid();
     $object_BookValidationHandler->is_book_price_valid();
     $errorVariables = [
-        // $object_BookValidationHandler->error_book_sku,
         $object_BookValidationHandler->error_book_title,
         $object_BookValidationHandler->error_book_author,
         $object_BookValidationHandler->error_book_category,
@@ -20,7 +20,6 @@ if (isset($_POST['update_book'])) {
         $object_BookValidationHandler->error_book_price,
         $object_BookValidationHandler->error_book_image,
     ];
-    var_dump($_FILES["book_file"]["name"] != "");
     if ($object_BookValidationHandler->is_array_empty($errorVariables)) {
         if ($_FILES["book_file"]["name"] != "") {
             $object_BookValidationHandler->is_book_image_valid();
@@ -30,19 +29,16 @@ if (isset($_POST['update_book'])) {
                        
                        
                 $object_CRUD->updateRecord('books',['cover_image'=>"$object_BookValidationHandler->book_image_name"],'sku',"$id");
-
-               
-                header('Location: ALL_BOOKS.PHP');
-                unset($_SESSION['active_book_sku']);
+                // header('location: ALL_BOOKS.PHP');
+                echo "<script> window.location.href='ALL_BOOKS.PHP' </script>"; 
             } else {
                 $object_validation->error_book_image = "file location error";
             }
         } else {
 
             $object_CRUD->updateRecord('books',['title' => "$_POST[book_title]",'author' => "$_POST[book_author]",'category' =>" $_POST[book_category]",'discription' => "$_POST[book_discription]",'quantity' => "$_POST[book_quantity]",'book_modified' => $object_CRUD->current_date()],'sku',"$id");
-
-            header('Location: ALL_BOOKS.PHP');
-            unset($_SESSION['active_book_sku']);
+            // header('location: ALL_BOOKS.PHP');
+            echo "<script> window.location.href='ALL_BOOKS.PHP' </script>";
         }
     }
 }
@@ -66,7 +62,7 @@ if (isset($_POST['update_book'])) {
                 class="bg-gray-300 px-5 py-10 w-full  grid grid-cols-2 gap-10 text-lg">              
                 <div class="flex flex-col">
                     <label for="book_sku">Book SKU</label>
-                    <input type="text" name="book_sku" id="book_sku" class="p-2 border-gray-400 h-10 bg-gray-300 border-b outline-none" value="<?php echo $object_CRUD->row["sku"]; ?>" disabled>
+                    <input type="text" name="book_sku" id="book_sku" class="p-2 border-gray-400 h-10 bg-gray-300 border-b outline-none" value="<?php echo $object_CRUD->row["sku"];?>" disabled>
                     <span class="text-red-500 text-sm"><?php echo $object_BookValidationHandler->error_book_sku; ?></span>
                 </div>
                 <div class="flex flex-col">
